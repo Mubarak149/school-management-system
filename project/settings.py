@@ -92,25 +92,24 @@ WSGI_APPLICATION = 'project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': os.path.join(BASE_DIR, env('SQLITE_NAME', default='db.sqlite3')),
         }
     }
 else:
     DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'excomsgc_excosgi',
-        'USER': 'excomsgc_admin',
-        'PASSWORD': 'jhbYKBj;]u(}',
-        'HOST': 'localhost',  # Or '127.0.0.1' if you're using local MySQL
-        'PORT': '3306',       # The default MySQL port
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': env('MYSQL_NAME'),
+            'USER': env('MYSQL_USER'),
+            'PASSWORD': env('MYSQL_PASSWORD'),
+            'HOST': env('MYSQL_HOST', default='localhost'),
+            'PORT': env('MYSQL_PORT', default='3306'),
+        }
     }
-}
 
 # Email
 #nqnm nwjb ypcx qimf django-mail
