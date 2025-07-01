@@ -1,0 +1,138 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Teacher </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+   <!-- Option 1: Include in HTML -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'staff/css/style.css' %}">
+     <style>
+      
+h4 {
+    color: #343a40;
+}
+
+
+#teacher-name {
+    color: #007bff;
+}
+
+#assign-form .form-group label {
+    font-weight: bold;
+}
+
+#assign-form .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff; 
+    transition: background-color 0.3s ease;
+}
+
+#assign-form .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .col-md-4, .col-md-8 {
+        text-align: center;
+    }
+    .col-md-8 {
+        margin-top: 20px;
+    }
+}
+
+     </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark position-fixed " style="width: 100%; top: 0; height: auto; z-index: 1; place-items: center;">
+        <div class="container-fluid">
+          <a class="navbar-brand  fw-bold text-uppercase me-auto" href="{%url 'adminHome'%}">Admin Dashboard</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+        </div>
+      </nav>
+
+      <!-- Navbar -->
+      {% if messages %}
+      {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissable fade show" role="alert">
+              {{ message }}
+              <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+      {% endfor %}
+    {% endif %}
+<!-- assign container -->
+      <div class="container" style="margin-top: 150px;">
+        <div class="row">
+            <div class="col-md-6 text-center mb-2">
+                <img src="{{the_staff.staff_pic.url}}" class="rounded-circle w-50"  alt="Teacher Profile Picture">
+                <h3 class="mt-3" id="teacher-name">{{the_staff.staff_user.first_name}} {{the_staff.staff_user.last_name}}</h3>
+                <p id="teacher-email">{{the_staff.staff_user.email}}</p>
+                <table class="table table-hover table-responsive text-start">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col">Subjects</th>
+                        <th scope="col">Classes</th>
+                        <th scope="col">Button</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in the_staff.teachers_set.all%}
+                            <tr>
+                                <td>{{s.teacher_subject.name}}</td>
+                                <td>{{s.teacher_class.get_class_name_display}} {{s.teacher_class.class_no}}{{s.teacher_class.get_class_type_display}} {{s.teacher_class.get_class_category_display}}</td>
+                                <td><a href="{%url "teacherDelete" s.id%}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to Delete this')">Delete</a></td>
+                            </tr>
+                        {%endfor%}
+                    </tbody>
+                  </table>
+                  
+                  
+               
+            </div>
+            <div class="col-md-6 mb-2">
+                <h4 class="mb-4">Assign Class and Subject</h4>
+                <form id="assign-form" method='post' enctype="multipart/form-data" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="subject-select">Select Subject</label>
+                        <select name="teacher_subject" required id="id_teacher_subject" class="form-select">
+                            <option value="" selected>Select Subject</option>
+                            {% for subject in subjects %}
+                                  <option value="{{subject.id}}">
+                                    {{subject.name}}
+                                  </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="class-select">Select Class</label>
+                        <select name="teacher_class" id="id_teacher_class"  class="form-select">
+                            <option value="" selected>Select Class</option>
+                            {% for the_class in classes %}
+                                  <option value="{{the_class.id}}">
+                                    {{the_class.get_class_name_display}} {{the_class.class_no}}{{the_class.get_class_type_display}} {{the_class.get_class_category_display}}
+                                  </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-2 w-100">Assign</button>
+                </form>
+            </div>
+        </div>
+    </div>
+     
+<!-- assign container end -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+</body>
+</html>

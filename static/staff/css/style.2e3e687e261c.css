@@ -1,0 +1,87 @@
+*{
+    box-sizing: border-box;
+}
+
+:root{
+    --offCanvas-width:270px;
+    --topNavbarHeight:80px;
+}
+.sidebar-nav{
+    width: var(--offCanvas-width);
+}
+.sidebar-link {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-link .right-icon{
+    display: inline-flex;
+   
+    
+}
+.sidebar-link[aria-expanded = "true"] .right-icon{
+    transform: rotate(180deg);
+}
+
+.card{
+    background-color: #a9a9a9;
+}
+@media (min-width:992px) {
+    body{
+        overflow: auto !important;
+    }
+    
+    .sidebar-nav{
+        transform: none;
+        visibility: visible !important;
+        top: var(--topNavbarHeight);
+        height: calc(100% - var(--topNavbarHeight));
+    }
+    main{
+        margin-left: var(--offCanvas-width);
+
+    }
+    .btn-close {
+        display: none;
+    }
+}
+
+/* Base styles */
+.notification {
+    display: none; /* Hide by default */
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* Show when targeted */
+#notification:target {
+    display: block;
+}
+
+/* Subpage within the Notification */
+.notification-subPage {
+    display: block; /* Ensure it is block to show content */
+}
+
+/* Close button */
+.close-notification {
+    display: block;
+    text-align: right;
+    margin-bottom: 10px;
+    cursor: pointer;
+    color: red;
+}
+.input-group {
+    display: none;
+}
+
+.grade-input, .subject-select, .grade-select {
+    margin-right: 5px;
+}

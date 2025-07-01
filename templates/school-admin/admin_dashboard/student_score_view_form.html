@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excosmgi Report View</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5em;
+            color: #ffffff !important;
+        }
+        .hero-section {
+            text-align: center;
+            margin: 50px 0;
+            color: #495057;
+        }
+        .form-section {
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: auto;
+        }
+        .form-section h3 {
+            color: #343a40;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #004085;
+        }
+        .instruction-text {
+            color: #6c757d;
+            font-size: 1.1em;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+ 
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Excosmgi Report View</a>
+    </nav>
+ 
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <h2>Welcome to the Excosmgi Report Viewing Portal</h2>
+        <p class="instruction-text">Please enter the term and year to view the report sheet.</p>
+    </section>
+ 
+    <!-- Form Section -->
+    <section class="form-section">
+        <h3>Report Sheet Search</h3>
+        <form id="reportForm" method='post'>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="termInput">Term</label>
+                <input type="number" id="termInput" min='1' max='3' name="term" class="form-control" placeholder="Enter term (e.g., 1, 2, 3)" required>
+            </div>
+            <div class="form-group">
+                <label for="class_type">Class Type:</label>
+                <select id="class_type" name="session" class="form-control" required>
+                    {% for session in sessions %}
+                    <option value="{{ session.id }}">
+                        {{ session.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">View Report</button>
+        </form>
+    </section>
+ 
+    <!-- JavaScript -->
+    <script>
+        
+    </script>
+ 
+</body>
+</html>

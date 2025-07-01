@@ -1,0 +1,381 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{% static 'student-static/style.css' %}"> 
+    <style>
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .nav-link {
+            cursor: pointer;
+            font-weight: 400;
+            text-transform: capitalize;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#!">Excellent Community School Student Dashboard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link "  href="#!" onclick="setActive(this),  showSection('profile')">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!" onclick="setActive(this), showSection('courses')">Courses</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!" onclick="setActive(this), showSection('grades')">Grades</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!" onclick="setActive(this), showSection('teachers')">Teachers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!" onclick="setActive(this), showSection('performanceChartSection')">Performance</a>
+                    </li>
+                    
+                </ul>
+                    <button class="btn btn-sm"><a href="{%url 'main'%}" class="nav-link">Back to main site</a></button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{message.tags}}" role="alert">
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    {% endif %}
+        <!-- Profile Section -->
+        <div id="profile" class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4 ms-auto p-2">
+                    <img src="{{ student.pic.url}}" class="img-fluid img-thumbnail avatar" alt="Student Avatar">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{student.user.first_name}} {{student.user.last_name}}</h5>
+                        <p class="card-text">Email: {{student.user.email}}</p>
+                        <p class="card-text">My class: {{myclass.get_class_name_display}} {{myclass.class_no}}{{myclass.get_class_type_display}}</p>
+                        <p class="card-text">Admission No: <small class="text-muted"> {{admission_no}} </small></p>
+                        {%if student.student_active%}
+                            <button class="btn btn-success" id="activeBtn">Active</button>
+                        {%else%}
+                            <button class="btn btn-danger" id="activeBtn">Inactive</button>
+                        {%endif%}
+                        <a class="btn btn-success" href="{% url 'promotionRecords' student.id%}" role="button" >
+                            My Promotions
+                        </a>
+                        {% if user.user_type == '3' or user.user_type == '1'%}
+                            <button class="btn btn-danger" onclick="logout()">Logout</button>
+                            <a class="btn btn-success" href="{% url 'studentGrades' student.id%}" role="button" >
+                                My Exams
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Courses Section -->
+        <div id="courses" class="card mb-3" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title">Courses</h5>
+                <ul class="list-group list-group-flush">
+                    {%for course in courses %}
+                        <li class="list-group-item">{{ course }}</li>
+                    {%endfor%}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Grades Section -->
+        <div id="grades" class="card mb-3" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title">Recent Grades</h5>
+                <select id="termSelect" onchange="updateGradesDisplay(this.value)">
+                    <option value="1" >Term 1</option>
+                    <option value="2">Term 2</option>
+                    <option value="3">Term 3</option>
+                </select>
+                <div id="gradeDisplay">
+                    <!-- Dynamic grade content will be loaded here -->
+                </div>
+                <button class="btn btn-primary" onclick="downloadPDF(document.getElementById('termSelect').value)">
+                    Download Selected Term Results
+                </button>
+            </div>
+        </div>
+        
+
+        <!-- Teachers Section -->
+        <div id="teachers" class="card mb-3" style="display: none;">
+            <div class="card-body">
+                <h5 class="card-title">Teachers</h5>
+                <ul class="list-group list-group-flush">
+                    {%for teacher in teachers %}
+                        <li class="list-group-item">Mr.{{teacher.teacher.staff_user.first_name}} {{teacher.teacher.staff_user.last_name}} [{{ teacher.teacher_subject.name}}]</li>
+                    {%endfor%}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Chart Section -->
+<div id="performanceChartSection" class="card mb-3" style="display: none;">
+    <div class="card-body">
+        <h5 class="card-title">Term Performance Chart</h5>
+        <select id="termPerformance" onchange="changePerformance(this.value)">
+            <option value="1" >Term 1 Performance</option>
+            <option value="2">Term 2 Performance</option>
+            <option value="3">Term 3 Performance</option>
+        </select>
+        <canvas id="performanceChart"></canvas>
+    </div>
+</div>
+
+<!-- change photo section -->
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    <script id="grades-data" type="application/json">
+    {{ grades_json|safe }}
+    </script>
+    <script>
+        // Nav-link logic start
+        
+        function setActive(element){
+            const Nav_link = document.querySelectorAll('.nav-link');
+        
+            Nav_link.forEach((nav) => {
+                nav.classList.remove('active');
+            })
+        
+            element.classList.add('active');
+        
+        }
+        
+        
+        
+        
+        // Nav-link Logic end
+        
+        
+        const activeBtn = document.getElementById('activeBtn');
+        
+        activeBtn.addEventListener('click', () => {
+            if (activeBtn.innerHTML === 'ON') {
+                activeBtn.innerHTML = 'OFF';
+            } else {
+                activeBtn.innerHTML = 'ON';
+            }
+        });
+        
+        
+        
+        
+              // Declare 'myChart' outside the function to maintain its scope across multiple calls
+        let myChart = null;
+        function changePerformance(term){
+            drawChart(term);
+        }
+        function drawChart(term) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const grades = JSON.parse(document.getElementById('grades-data').textContent);
+            console.log("grade",grades);
+            // Check if 'myChart' exists and destroy it if it does
+            if (myChart) {
+                myChart.destroy();
+            }
+        
+            // Create a new chart instance
+            myChart = new Chart(ctx, {
+                type: 'bar', // Using a line chart for term performance
+                data: {
+                    labels: Object.keys(grades[term]),
+                    datasets: [{
+                        label: 'Overall Score',
+                        data: Object.values(grades[term]),
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        fill: false
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            suggestedMin: 50,
+                            suggestedMax: 100
+                        }
+                    }
+                }
+            });
+        }
+        
+        
+        
+        function showSection(section) {
+            ['profile', 'courses', 'grades', 'teachers', 'performanceChartSection'].forEach(sec => {
+                document.getElementById(sec).style.display = 'none';
+            });
+            if(section === 'performanceChartSection') {
+                changePerformance(1);
+            }
+            document.getElementById(section).style.display = 'block';
+        }
+        
+        const input = JSON.parse(document.getElementById('grades-data').textContent);
+         console.log(input);
+
+// Define comments based on score ranges
+const getComment = (percentage) => {
+    if (percentage >= 90) return "Outstanding performance, keep it up!";
+    if (percentage >= 85) return "Excellent, continue striving for greatness!";
+    if (percentage >= 75) return "Very good understanding, just a little more effort!";
+    if (percentage >= 65) return "Good, but improvement is possible.";
+    if (percentage >= 50) return "Fair, consistent effort is required.";
+    return "Needs significant improvement.";
+};
+
+// Flatten the dictionary and calculate average scores
+const flattened = {};
+Object.values(input).forEach(subjectScores => {
+    for (const [subject, score] of Object.entries(subjectScores)) {
+        if (!flattened[subject]) {
+            flattened[subject] = [];
+        }
+        flattened[subject].push(score);
+    }
+});
+
+function downloadPDF(term) {
+    const termSelect = Number(document.getElementById('termSelect').value);
+
+    // Calculate the average scores and transform the data
+    const output = Object.entries(flattened).map(([subject, scores]) => {
+        const averageScore = scores[termSelect - 1];
+        const percentage = averageScore.toFixed(0);
+        const comment = getComment(averageScore);
+        return [subject, percentage, comment];
+    });
+
+    // Calculate the total score for the selected term
+    let totalScore = 0;
+    Object.values(flattened).forEach(subjectScores => {
+        totalScore += subjectScores[termSelect - 1];
+    });
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const logoUrl = '{% static "student-static/images/schoollogo.png" %}'; // Path to the logo
+
+    // Add school logo and report title
+    doc.addImage(logoUrl, 'PNG', 10, 10, 24, 24); // Logo position
+    doc.setFontSize(18);
+    doc.text('Excellent Community School Giwa', 60, 20); // Title
+    doc.setFontSize(12);
+    doc.text('Student Report Card', 60, 30); // Sub-header
+    
+    // Student information
+    doc.setFontSize(10);
+    doc.text('Name: {{student.user.first_name}} {{student.user.last_name}}', 20, 65);
+    doc.text('Class: {{myclass.get_class_name_display}} {{myclass.class_no}}{{myclass.get_class_type_display}}', 20, 70);
+    doc.text('Total Student in Class: {{student_count}}', 20, 75);
+
+    // Set termPosition based on the selected term
+    let positionText;
+    if (term === '1') {
+        positionText = 'Student Position: {{first_term_position}}';
+    } else if (term === '2') {
+        positionText = 'Student Position: {{second_term_position}}';
+    } else if (term === '3') {
+        positionText = 'Student Position: {{third_term_position}}';
+    }
+    doc.text(positionText, 20, 80);
+
+    // Display the total score
+    doc.text('Total Score: ' + totalScore, 20, 85);
+
+    // Columns and rows for the report card table
+    const columns = ["Subject", "Score", "Comments"];
+    const rows = output;
+
+    // Auto-table with updated settings
+    doc.autoTable({
+        startY: 90,
+        head: [columns],
+        body: rows,
+        theme: 'striped',
+        styles: { fillColor: [230, 240, 248], textColor: [34, 34, 34] },
+        columnStyles: {
+            0: { cellWidth: 50 },
+            1: { cellWidth: 30 },
+            2: { cellWidth: 80 }
+        },
+        margin: { left: 20, right: 20 }
+    });
+
+    // Adding the grading system and date at the bottom
+    const date_issued_report = new Date();
+    const year = date_issued_report.getFullYear();
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const month = monthNames[date_issued_report.getMonth()];
+    const day = date_issued_report.getDate();
+
+    doc.setFontSize(10);
+    doc.text('Grading System:', 20, doc.internal.pageSize.height - 50);
+    doc.text('90-100: Outstanding | 85-89: Excellent | 75-84: Very Good | 65-74: Good | 50-64: Fair | Below 50: Needs Improvement', 20, doc.internal.pageSize.height - 40);
+    doc.text(`${month} ${day}, ${year}`, 20, doc.internal.pageSize.height - 30);
+
+    // Save the PDF
+    setTimeout(() => {
+        doc.save(`term_${term}_results.pdf`);
+    }, 200);
+}
+
+   
+        
+        // update grades
+        
+        function updateGradesDisplay(term) {
+            const grades = JSON.parse(document.getElementById('grades-data').textContent);
+        
+            const gradeDisplay = document.getElementById('gradeDisplay');
+            gradeDisplay.innerHTML = ''; // Clear previous grades
+            Object.keys(grades[term]).forEach(subject => {
+                const p = document.createElement('p');
+                p.classList.add('card-text');
+                p.textContent = `${subject}: ${grades[term][subject]}`;
+                gradeDisplay.appendChild(p);
+            });
+        }
+        
+        // Initialize display
+        updateGradesDisplay(1); // Default to Term 1 on load
+        
+        
+        
+        
+        
+            </script>
+</body>
+</html>

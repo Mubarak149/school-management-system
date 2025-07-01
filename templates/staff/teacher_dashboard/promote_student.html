@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promote Students</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            background: white;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .eligible {
+            color: green; /* Green for eligible students */
+            font-weight: bold;
+        }
+        
+        .not-eligible {
+            color: red; /* Red for not eligible students */
+            font-weight: bold;
+        }        
+
+        .info {
+            background: #f9f9f9;
+            padding: 10px;
+            border-left: 5px solid #007bff;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        .alert {
+            background: #ffcccc;
+            padding: 10px;
+            text-align: center;
+            border-left: 5px solid red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Promote Students</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="info">
+            <p><strong>Current Class:</strong> {{ current_class.get_class_name_display }} {{ current_class.class_no }}{{ current_class.class_type }} {{ current_class.get_class_category_display }}</p>
+            <p><strong>Total Students:</strong> {{ students|length }}</p>
+        </div>
+
+        {% if all_students %}
+            <form method="POST">
+                {% csrf_token %}
+                <label for="next_class">Select Next Class:</label>
+                <select name="next_class" id="next_class" required>
+                    <option value="">-- Select Class --</option>
+                    {% for class in next_classes %}
+                    <option value="{{ class.id }}">{{ class.get_class_name_display }} {{ class.class_no }}{{ class.class_type }} {{ class.get_class_category_display }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit">Promote All Students</button>
+            </form>
+
+            <h3>Student Promotion Status</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>First Term</th>
+                        <th>Second Term</th>
+                        <th>Third Term</th>
+                        <th>Total Score</th>
+                        <th>Average</th>
+                        <th>Promotion Eligible</th>
+                    </tr>
+                </thead>
+                <tbody id="student-data">
+                    {% for student in all_students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.First_Term }}</td>
+                            <td>{{ student.Second_Term }}</td>
+                            <td>{{ student.Third_Term }}</td>
+                            <td>{{ student.Total_Session_Score }}</td>
+                            <td>{{ student.Average_Score }}</td>
+                            <td class="{% if student.Promotion_Eligible %}eligible{% else %}not-eligible{% endif %}">
+                                {% if student.Promotion_Eligible %}Yes{% else %}No{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>                
+            </table>
+        {% else %}
+        <p>No students found.</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

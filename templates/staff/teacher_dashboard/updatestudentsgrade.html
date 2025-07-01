@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>update student result </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+   <!-- Option 1: Include in HTML -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+     <style>
+      
+h4 {
+    color: #343a40;
+}
+.profile-Picture{
+    width:150px;
+    border:4px solid blue;
+}
+#student-name {
+    color: purple; 
+}
+
+#assign-form .form-group label {
+    font-weight: bold;
+}
+
+#assign-form .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    transition: background-color 0.3s ease;
+}
+
+#assign-form .btn-primary:hover {
+    background-color: #0056b3;
+}
+
+@media (max-width: 768px) {
+    .col-md-4, .col-md-8 {
+        text-align: center;
+    }
+    .col-md-8 {
+        margin-top: 20px;
+    }
+}
+
+     </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark position-fixed " style="width: 100%; top: 0; height: auto; z-index: 1; place-items: center;">
+        <div class="container-fluid">
+         
+          
+
+          <a class="navbar-brand  fw-bold text-uppercase me-auto" href="#">Excellent Community School Giwa</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+        </div>
+      </nav>
+
+      <!-- Navbar -->
+
+<!-- assign container -->
+      <div class="container" style="margin-top: 150px;">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img src="{{studentgrade.student.pic.url}}" class="rounded-circle profile-Picture" alt="Teacher Profile Picture">
+                <h3 class="mt-3" id="student-name">{{studentgrade.student.user.first_name}} {{studentgrade.student.user.last_name}}</h3>
+                <p id="student-class">{{studentgrade.the_class.get_class_name_display}} {{studentgrade.the_class.class_no}}{{studentgrade.the_class.get_class_type_display}}
+                    {%if studentgrade.the_class.get_class_category_display == 'None' %}
+
+                    {% else %}
+                        {{studentgrade.the_class.get_class_category_display}}
+                    {%endif%}
+                </p>
+                <p id="student-email">{{studentgrade.student.user.email}}</p>
+            </div>
+            <div class="col-md-8">
+                <h4 class="mb-4">Update Student Result</h4>
+                <form id="assign-form" method='post' enctype="multipart/form-data" >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="subject-select">Select Subject</label>
+                        {{form.subject}}
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="term-select">Select Term</label>
+                        {{form.term}}
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="score">Score</label>
+                        {{form.total_score}}
+                    </div>
+                    <div class="mb-2">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+     
+<!-- assign container end -->
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+    <script>
+        // Dummy data for subjects and classes
+const subjects = ["Mathematics", "English", "Physics", "Chemistry", "Biology"];
+const Terms = ["Term 1", "Term 2", "Term 3", "Term 4", "Term 5"];
+
+// Function to populate the select inputs
+function populateSelectOptions() {
+    const subjectSelect = document.getElementById('subject-select');
+    const termSelect = document.getElementById('term-select');
+
+    subjects.forEach(subject => {
+        const option = document.createElement('option');
+        option.value = subject;
+        option.textContent = subject;
+        subjectSelect.appendChild(option);
+    });
+
+    Terms.forEach(term => {
+        const option = document.createElement('option');
+        option.value = term;
+        option.textContent = term;
+        termSelect.appendChild(option);
+    });
+}
+
+// Function to handle form submission
+function handleFormSubmit(event) {
+    event.preventDefault();
+
+    const selectedSubject = document.getElementById('subject-select').value;
+    const selectedTerm = document.getElementById('term-select').value;
+
+    if (selectedSubject && selectedTerm) {
+        alert(`Assigned ${selectedSubject} to ${selectedTerm}`);
+    } else {
+        alert('Please select both subject and class.');
+    }
+}
+
+// Call the functions when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    populateSelectOptions();
+
+    const assignForm = document.getElementById('assign-form');
+    assignForm.addEventListener('submit', handleFormSubmit);
+});
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+
+# Django media uploads
+media/
+
+# SQLite database
+*.sqlite3
+
+# Migrations
+**/migrations/
+!*/migrations/__init__.py
+
+# VSCode settings
+.vscode/
+
+# MacOS and Linux hidden files
+.DS_Store
+
+# Logs
+*.log
+
+# Node modules if any frontend setup
+node_modules/
+
+# Python egg info
+*.egg-info/
+dist/
+build/
+
+# Static files collected by collectstatic (if any)
+staticfiles/
+
+#test files
+testcode.py

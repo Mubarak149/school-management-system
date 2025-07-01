@@ -1,0 +1,33 @@
+
+/* Base styles */
+.notification {
+    display: none; /* Hide by default */
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+/* Show when targeted */
+#notification:target {
+    display: block;
+}
+
+/* Subpage within the Notification */
+.notification-subPage {
+    display: block; /* Ensure it is block to show content */
+}
+
+/* Close button */
+.close-notification {
+    display: block;
+    text-align: right;
+    margin-bottom: 10px;
+    cursor: pointer;
+    color: red;
+}

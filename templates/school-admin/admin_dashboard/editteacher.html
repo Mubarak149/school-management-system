@@ -1,0 +1,158 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Teacher --page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+   <!-- Option 1: Include in HTML -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+
+</head>
+<body>
+
+  <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark position-fixed" style="width: 100%; top: 0; z-index: 1;">
+        <div class="container-fluid">
+          <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+
+          <a class="navbar-brand  fw-bold text-uppercase me-auto" href="index.html">Excellent Community School Giwa</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+           
+            <div class="d-flex  ms-auto">
+                <span class="bg-light mx-1 p-1 rounded-circle">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </span>
+                <span class="bg-light mx-1 p-1 rounded-circle">
+                    <i class="bi bi-bell-fill"></i>
+                </span>
+            </div>
+
+            <li class="nav-item dropdown ">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-person-circle fs-5"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  <li class="nav-item"><a class="dropdown-item" href="{%url 'adminHome'%}">dashboard</a></li>
+                  <li class="nav-item"><a class="dropdown-item" href="{%url 'adminProfile' user.admin.id %}">my profile</a></li>
+                  <li class="nav-item"><a class="dropdown-item" href="{%url 'adminSetting' %}">settings</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li class="nav-item">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'logout' %}" class="btn btn-login">Logout</a>
+                    {% else %}
+                    
+                    {% endif %}
+                </li>
+                </ul>
+              </li>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Navbar -->
+
+
+
+      
+     <!-- Add teacherss start -->
+    {% if messages %}
+      {% for message in messages%}
+          <div class="alert alert-{{ message.tags }} alert-dismissable fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close btn btn-primary" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+      {% endfor %}
+    {% endif%}
+<div id="UpdateStaff" class="container" style="margin: 10% auto;">
+ 
+
+    <form method='post' enctype="multipart/form-data" id="updateForm">
+      {% csrf_token %}
+      <legend>
+        <h2>Update a Staff Section</h2>
+        <div class="mb-3">
+          <label for="parentFirstname" class="form-label">First name</label>
+          {{staff_user_form.first_name}}
+        </div>
+        <div class="mb-3">
+          <label for="parentLastname" class="form-label">Middle name</label>
+          {{staff_user_form.middle_name}}
+        </div>
+        <div class="mb-3">
+          <label for="parentLastname" class="form-label">Last name</label>
+          {{staff_user_form.last_name}}
+        </div>
+        <div class="mb-3">
+          <label for="teacherEmail" class="form-label">Email</label>
+          {{staff_user_form.email}}
+        </div>
+        <div class="mb-3">
+          <label for="teacherPassword" class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" id="id_password">
+          <small class="form-text text-muted">
+            Leave blank if you don't want to change the password.
+          </small>
+        </div>
+        <div class="mb-3">
+          <label for="teacherPhone" class="form-label">Phone Number</label>
+          {{staff_form.staff_contact}}
+        </div>
+        <div class="mb-3">
+          <label for="subject" class="form-label">is he/she a teacher</label>
+          {{staff_form.is_teacher}}
+        </div>
+        <div class="mb-3">
+          <label for="role" class="form-label">Role</label>
+          {{staff_form.work_title}}
+        </div>
+        
+        
+        <div class="mb-3">
+          <label for="parentGender" class="form-label">gender</label>
+          {{staff_form.staff_gender}}
+          <!--<select name="parentGender" id="parentGender"  class="form-control">
+            <option  >select your gender</option>
+            <option value="male">male</option>
+            <option value="female">female</option>
+            <option value="other">other</option>
+          </select>-->
+        </div>
+        
+  <hr class="fw-bold">
+      </legend>
+    
+      <button type="submit" class="btn btn-primary" id="teacherUpdate">Update</button>
+    </form>
+  </div>
+      
+      
+      <!-- Update teacher  end -->
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="{% static 'admin/js/script.js' %}"></script>
+    <script>
+      document.getElementById('updateForm').addEventListener('submit', function(e) {
+        const passwordField = document.getElementById('id_password');
+        const password = passwordField.value;
+
+        if (password && password.length < 8) {
+            e.preventDefault(); // Prevent form submission
+            alert('Password must be at least 8 characters long if provided.');
+        }
+    });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,769 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+   <!-- Option 1: Include in HTML -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+<link rel="stylesheet" href="{% static 'admin/css/style.css'%}">
+
+</head>
+<body>
+  <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark position-fixed" style="width: 100%; top: 0; z-index: 1;">
+        <div class="container-fluid">
+          <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          
+
+          <a class="navbar-brand  fw-bold text-uppercase me-auto" href="{% url 'main' %}">Excellent Community School Giwa</a>
+          
+          
+
+            <li class="nav-item dropdown ms-auto">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-person-circle fs-5"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  <li class="nav-item"><a class="dropdown-item" href="{% url 'adminProfile' user.admin.id%}">my profile</a></li>
+                  <li class="nav-item"><a class="dropdown-item" href="{% url 'adminSetting' %}">settings</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li class="nav-item"><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+              </li>
+          </div>
+        </div>
+      </nav>
+
+  <!-- Navbar -->
+
+    <!-- offCanvase -->
+      <div class="offcanvas offcanvas-start bg-dark text-white sidebar-nav " data-bs-backdrop="false" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasExampleLabel">Admin Dashboard</h5>
+          <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+         <nav class="navbar-dark">
+          <ul class="navbar-nav">
+            <li>
+              <div class="text-muted fw-bold small text-uppercase px-2">
+              infor
+              </div>
+            </li>
+            <li class="nav-item">
+           <a class="nav-link active" href="#!" onclick="showSection('dashboard')">
+            <span class="me-2">
+              <i class="bi bi-speedometer2"></i>
+            </span>
+            <span>Dashboard</span>
+           </a>
+            </li>
+            <hr class="dropdown-divider my-4">
+            <li>
+              <div class="text-muted fw-bold small text-uppercase px-2">
+              pages
+              </div>
+            </li>
+            <li >
+              <a class="nav-link px-3 sidebar-link" 
+              data-bs-toggle="collapse" 
+              href="#collapseExample" role="button"
+               aria-expanded="false" aria-controls="collapseExample">
+                <span class="me-2">
+                 <i class="bi bi-people-fill"></i>
+                </span>
+                <span>Students</span>
+                <span class="right-icon ms-auto">
+                  <i class="bi bi-chevron-down"></i>
+                </span>
+              </a>
+              <div class="collapse" id="collapseExample">
+                <div class="card card-body bg-dark">
+                
+                    <a href="#!" class="nav-link px-3" onclick="showSection('studentTableSection')">
+                        <span class="me-2">
+                            <i class="bi bi-people"></i>
+                        </span>
+                        <span>All Students</span>
+                    </a>
+
+                   
+                    <a href="#!" class="nav-link px-3" onclick="showSection('addStudent')">
+                        <span class="me-2">
+                            <i class="bi bi-plus"></i>
+                        </span>
+                        <span>Add Student</span>
+                    </a>
+
+                  
+
+                </div>
+              </div>
+               </li>
+
+               <li >
+                <a class="nav-link px-3 sidebar-link" 
+                data-bs-toggle="collapse" 
+                href="#collapsTeachers" role="button"
+                 aria-expanded="false" aria-controls="collapsTeachers">
+                  <span class="me-2">
+                   <i class="bi bi-people-fill"></i>
+                  </span>
+                  <span>Staffs</span>
+                  <span class="right-icon ms-auto">
+                    <i class="bi bi-chevron-down"></i>
+                  </span>
+                </a>
+                <div class="collapse" id="collapsTeachers">
+                  <div class="card card-body bg-dark">
+                  
+                      <a href="#!" class="nav-link px-3" onclick="showSection('teachersViewTableSection')">
+                          <span class="me-2">
+                              <i class="bi bi-people"></i>
+                          </span>
+                          <span>All Staffs</span>
+                      </a>
+  
+                      <a href="#!" class="nav-link px-3" onclick="showSection('addTeacher')">
+                        <span class="me-2">
+                            <i class="bi bi-plus"></i>
+                        </span>
+                        <span>Add Staff</span>
+                    </a>
+  
+                  </div>
+                </div>
+                 </li>
+
+                      <li class="nav-item">
+                        <a href="{%url 'newAdmin' %}" class="nav-link px-3">
+                          <span class="me-2">
+                            <i class="bi bi-person"></i>
+                          </span>
+                          <span>Register New Admin</span>
+                          
+                        </a>
+                      </li>
+                    
+
+                     <li class="nav-item">
+                      <a href="{% url 'news' %}" class="nav-link px-3">
+                        <span class="me-2">
+                          <i class="bi bi-newspaper"></i>
+                        </span>
+                        <span>Set School News</span>
+                        
+                      </a>
+                       </li>
+                       
+                      <li class="nav-item">
+                        <a href="{% url 'classRecord' %}" class="nav-link px-3">
+                          <span class="me-2">
+                            <i class="bi bi-newspaper"></i>
+                          </span>
+                          <span>Download Class Record</span>
+                          
+                        </a>
+                         </li>
+                         
+                         <li class="nav-item">
+                         <a href="{%url 'studentScore'%}" class="nav-link px-3">
+                           <span class="me-2">
+                           <i class="bi bi-people-fill"></i>
+                           </span>
+                           <span>Download Student Class Score</span>
+                           
+                         </a>
+                          </li>
+
+               <li class="nav-item">
+                <a href="{% url 'adminSetting' %}" class="nav-link px-3">
+                  <span class="me-2">
+                  <i class="bi bi-gear-fill"></i>
+                  </span>
+                  <span>Settings</span>
+                  
+                </a>
+               </li>
+
+               <li class="nav-item">
+                <a href="{% url 'academic_session_management' %}" class="nav-link px-3">
+                  <span class="me-2">
+                  <i class="bi bi-calendar-fill"></i>
+                  </span>
+                  <span>Academic Session</span>
+                </a>
+               </li>
+          </ul>
+
+         </nav>
+        </div>
+      </div>
+    <!-- offCanvase -->
+
+
+    <!-- main section -->
+      <main class="mt-5 p-3 sm-25">
+        <div class="container mx-auto my-5">
+
+
+          <div id="dashboard">
+            <!-- alert -->
+          {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissable fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-bs-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+          {% endif %}
+            
+            <div class="row g-3">
+            <div class="col-md-3"> <!-- col 1-->
+              <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Teachers</div>
+                <div class="card-body d-flex justify-content-between">
+                  <h5 class="card-title">{{teacher_count}}</h5>
+                  <span>
+                      <i class="bi bi-people"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-md-3"> <!-- col 2-->
+              <div class="card text-white bg-secondary mb-3" >
+                <div class="card-header">Students</div>
+                <div class="card-body d-flex justify-content-between">
+                  <h5 class="card-title">{{student_count}}</h5>
+                  <span>
+                      <i class="bi bi-people"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-md-3"> <!-- col 3-->
+              <div class="card text-white bg-success mb-3" >
+                <div class="card-header">Staffs</div>
+                <div class="card-body d-flex justify-content-between">
+                  <h5 class="card-title">{{staff_count}}</h5>
+                  <span>
+                      <span>
+                          <i class="bi bi-people"></i>
+                      </span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-md-3"> <!-- col 4-->
+              <div class="card text-white bg-dark mb-3" >
+                <div class="card-header">Senior Staffs</div>
+                <div class="card-body d-flex justify-content-between">
+                  <h5 class="card-title">Null</h5>
+                  <span>
+                      <i class="bi bi-star"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+          
+            <!-- chart section -->
+            
+            <!-- chart section end -->
+
+            </div>
+          </div>
+        
+        <!--  allstudents start -->
+
+            <div class="container mt-5" id="studentTableSection" style="display: none;">
+              <form action="" method="POST">
+                <div class="row mb-3 p-2">
+                  <div class="col-md-6 mb-2">
+                      <input type="text" id="searchInput" class="form-control" placeholder="Search by any field...">
+                  </div>
+                  <div class="col-md-6 mb-2">
+                      <select id="filterSelect" class="form-select">
+                          <option value="">Filter by</option>
+                          <option value="firstname">First Students</option>
+                          <option value="lastname">Last Active Students</option>
+                          <option value="email">Email</option>
+                          <option value="class">Class</option>
+                          <option value="enrollment_date">Enrollment Date</option>
+                          <option value="active">Present Students</option>
+                          <option value="non_active">Old Students</option>
+                      </select>
+                  </div>
+
+              </div>
+
+              
+              </form>
+              
+              <table class="table table-responsive table-striped">
+                  <thead>
+                      <tr>
+                          <th>Avatar</th>
+                          <th>First Name</th>
+                          <th>Last Name</th>
+                          <th>Email</th>
+                          <th>Date Start</th>
+                      </tr>
+                  </thead>
+                  <tbody id="studentTable">
+                     
+                  </tbody>
+              </table>
+              <!-- Pagination Controls -->
+              <div class="pagination text-center mt-3">
+                {% if students_page.has_previous %}
+                    <a href="?page=1" class="btn btn-primary me-2">First</a>
+                    <a href="?page={{ students_page.previous_page_number }}" class="btn btn-primary me-2">Previous</a>
+                {% endif %}
+            
+                <span class="mx-3">Page {{ students_page.number }} of {{ students_page.paginator.num_pages }}</span>
+            
+                {% if students_page.has_next %}
+                    <a href="?page={{ students_page.next_page_number }}" class="btn btn-primary me-2">Next</a>
+                    <a href="?page={{ students_page.paginator.num_pages }}" class="btn btn-primary">Last</a>
+                {% endif %}
+            </div>
+        
+          </div>
+   
+        
+        
+        <!-- allstudents end -->
+
+
+
+        <!-- Add students start -->
+          <div id="addStudent" style="display: none;">
+            <form method='post' action="{% url 'addNewStudent'%}" enctype="multipart/form-data">
+              {% csrf_token %}
+              <legend>
+                <h2>Students Registration Section</h2>
+                
+                <div class="mb-3">
+                  <label for="class" class="form-label">Choose AcademicSession</label>
+                  <select name="session" class="form-select" required id="id_student_session">
+                    <option value="" selected>Select Academic Session</option>
+                    {% for session in sessions %}
+                      <option value="{{session.id}}">{{session.name}} {% if session.is_current %}✅{% else %}❌{% endif %}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="class" class="form-label">Choose a Class</label>
+                  <select name="student_class" id="id_student_class"  class="form-select" required>
+                    <option value="" selected>Select Class</option>
+                    {% for the_class in classes %}
+                      <option value="{{the_class.id}}">
+                        {{the_class.get_class_name_display}} {{the_class.class_no}}{{the_class.get_class_type_display}} {{the_class.get_class_category_display}}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="firstname" class="form-label">First name</label>
+                  {{user_form.first_name}}
+                </div>
+                <div class="mb-3">
+                  <label for="lastname" class="form-label">Last name</label>
+                  {{user_form.last_name}}
+                </div>
+                <div class="mb-3">
+                  <label for="firstname" class="form-label">Middle name</label>
+                  {{user_form.middle_name}}
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  {{user_form.email}}
+                </div>
+
+                <div class="mb-3">
+                  <label for="password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password" value="12345678" required>
+                </div>
+                <div class="mb-3">
+                  <label for="comfirmpassword" class="form-label">Comfirm Password</label>
+                  <input type="password" class="form-control" name="password" id="comfirmpassword" value="12345678" required>
+                </div>
+                <div class="mb-3">
+                  <label for="DOB" class="form-label">DOB</label>
+                  <input type="date" class="form-control" name="dob" id="DOB"  required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="DateInroll" class="form-label">enrollment date</label>
+                  <input type="date" class="form-control" name="enrollment_date" id="DateInroll"  required>
+                </div>
+                <div class="mb-3">
+                  <label for="placeOfBirth" class="form-label">place of birth</label>
+                  <input type="text" class="form-control" name="place_of_birth" id="placeOfBirth" value="kaduna" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="gender" class="form-label">gender</label>
+                  {{student_form.gender}}
+                </div>
+                
+                <div class="mb-3">
+                  <label for="NIN" class="form-label">NIN</label>
+                  <input type="text" name="nin" class="form-control" value="12345678910" id="NIN" maxlength="12" >
+                </div>
+
+                <div class="mb-3">
+                  <label for="picture" class="form-label">Insert Picture</label>
+                  {{student_form.pic}}
+                </div>
+          <hr class="fw-bold">
+              </legend>
+            
+              <legend>
+                <h2>Parent Registration Section</h2>
+                <div class="mb-3">
+                  <label for="parentFirstname" class="form-label">First name</label>
+                  <input type="text" class="form-control"  name="parent_first_name" id="parentFirstname" required>
+                </div>
+                <div class="mb-3">
+                  <label for="parentLastname" class="form-label">Last name</label>
+                  <input type="text" class="form-control" name="parent_last_name" id="parentLastname" required>
+                </div>
+                <div class="mb-3">
+                  <label for="parentMiddlename" class="form-label">Middle name</label>
+                  <input type="text" class="form-control" name="parent_middle_name" id="parentMiddlename">
+                </div>
+                <div class="mb-3">
+                  <label for="occupation" class="form-label">Occupation</label>
+                  <input type="text" class="form-control" name="occupation" id="occupation" value="Business man">
+                </div>
+                <div class="mb-3">
+                  <label for="parentPhone" class="form-label">Parent Phone Number</label>
+                  <input type="number" class="form-control" name="phone_no" id="parentPhone">
+                </div>
+              
+                
+                <div class="mb-3">
+                  <label for="parentGender" class="form-label">Gender</label>
+                  {{parent_form.parent_gender}}
+                </div>
+              
+          <hr class="fw-bold">
+              </legend>
+
+              <legend>
+                <h2>Address Registration Section</h2>
+                <div class="mb-3">
+                  <label for="state" class="form-label">State</label>
+                  <input type="text" class="form-control" name="state" id="padress-state" value="Kaduna" required>
+                </div>
+                <div class="mb-3">
+                  <label for="lga" class="form-label">LGA</label>
+                  <input type="text" class="form-control" name="lga" id="LGA" value="Giwa" required>
+                </div>
+                <div class="mb-3">
+                  <label for="ward" class="form-label">Ward</label>
+                  <input type="text" class="form-control" name="ward" id="ward" value="Giwa ward" >
+                </div>
+                <div class="mb-3">
+                  <label for="street" class="form-label">Street</label>
+                  <input type="text" class="form-control" name="street" id="street" value="Giwa">
+                </div>
+              
+          <hr class="fw-bold">
+              </legend>
+            
+              <button type="submit" class="btn btn-primary" id="parentSubmit">submit</button>
+            </form>
+          </div>
+        <!-- Add students start end -->
+
+
+        <!-- ViewStaffs start -->
+          <div class="container mt-5" id="teachersViewTableSection" style="display: none;">
+            
+                <div class="row mb-3 p-2">
+                  <div class="col-md-6 mb-2">
+                      <input type="text" id="searchTeachersInput" class="form-control" placeholder="Search by any field...">
+                  </div>
+                  <div class="col-md-6 mb-2">
+                      <select id="filterTeachersSelect" class="form-select">
+                        <option value="">Filter by</option>
+                        <option value="firstname">First Name</option>
+                        <option value="lastname">Last Name</option>
+                        <option value="email">Email</option>
+                        <option value="class">Class</option>
+                        <option value="work_title">Role</option>
+                        <option value="enrollment_date">Start Work Date</option>
+                      </select>
+                  </div>
+              </div>
+            <table class="table table-responsive table-striped teble-hover">
+                <thead>
+                    <tr>
+                        <th>Avatar</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Date Start</th>
+                    </tr>
+                </thead>
+                <tbody id="teachersTable">
+                    <!-- Teachers data will be populated here -->
+                    
+                </tbody>
+                </tbody>
+            </table>
+          </div>
+        <!-- ViewStaffs end -->
+
+
+          
+        <!-- Add Staff start -->
+          <div id="addTeacher" style="display: none;">
+
+            <form method='post' action="{% url 'addStaff' %}" enctype="multipart/form-data">
+              {% csrf_token %}
+              <legend>
+                <h2>Add New Teacher Section</h2>
+                <div class="mb-3">
+                  <label for="parentFirstname" class="form-label">First name</label>
+                  <input type="text" class="form-control" id="parentFirstname" name='first_name' value="Dan jummai" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="parentLastname" class="form-label">Middle name</label>
+                  <input type="text" class="form-control" id="parentLastname" name='middle_name' value="Musa" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="parentLastname" class="form-label">Last name</label>
+                  <input type="text" class="form-control" id="parentLastname" name='last_name' value="Musa" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="teacherEmail" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="teacherEmail" name='email' value="bakori@gmail.com" >
+                </div>
+                <div class="mb-3">
+                  <label for="teacherPhone" class="form-label">Phone Number</label>
+                  <input type="number" class="form-control" id="teacherPhone" name='staff_contact' value="09054735433" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="teacherNin" class="form-label">NIN</label>
+                  {{staff_form.staff_nin}}
+                </div>
+
+                <div class="mb-3">
+                  <label for="teacherPassword" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="teacherPassword" name='password1' value="09054735433" required>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="teacherconfirmPassword" class="form-label">Confirm Password</label>
+                  <input type="password" class="form-control" id="teacherconfirmPassword" name='password' value="09054735433" required>
+                </div>
+              
+                
+                <div class="mb-3">
+                  <label for="parentGender" class="form-label">gender</label>
+                  <select name="staff_gender" id="parentGender"  class="form-control">
+                    <option  >select your gender</option>
+                  <option value="male" selected>male</option>
+                  <option value="female">female</option>
+                  <option value="other">other</option>
+                </select>
+
+                </select>
+
+                <div class="mb-3">
+                  <label for="staffRole" class="form-label">Staff Role</label>
+                  {{staff_form.work_title}}
+                </div>
+                
+                <div class="mb-3">
+                  <label class="form-check-label" for="flexCheckDefault">
+                    is He/She a Teacher
+                  </label>
+                  <input class="form-check-input" type="checkbox" id="flexCheckDefault" name="is_teacher">
+                </div>
+                
+
+                <hr class="fw-bold">
+
+                <div class="mb-3">
+                  <label for="picture" class="form-label">Insert Picture</label>
+                  <input type="file" accept="jpg/png" name="staff_pic" class="form-control" id="picture"  >
+                </div>
+
+                <hr class="fw-bold">
+                    
+                  </div>
+                
+              <hr class="fw-bold">
+                  </legend>
+            
+              <button type="submit" class="btn btn-primary" id="teacherSubmit">submit</button>
+            </form>
+          </div>
+        <!-- Add Staff  end -->
+
+
+      </main>
+    <!-- main section -->
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="{% static "admin/js/script.js" %}"></script>
+    <script>
+      // students table logic start
+          document.addEventListener('DOMContentLoaded', function () {
+            const students = {{student_json|safe}}
+            const studentTable = document.getElementById('studentTable');
+            const searchInput = document.getElementById('searchInput');
+            const filterSelect = document.getElementById('filterSelect');
+            const studentUrls = {
+              editStudent: "{% url 'editStudent' 0 %}".replace('/0/', '/'),
+              viewStudent: "{% url 'viewStudent' 0 %}".replace('/0/', '/'),
+              deleteurls: "{%url 'Delete' 0%}".replace('/0/', '/')
+          };
+
+            function populateTable(data) {
+                studentTable.innerHTML = data.map(student => `
+                    <tr>
+                        <td>
+                          <img src="${student.avatar}" class="avatar" alt="avatar">
+                          ${student.active ? 
+                            '<span class="status-dot online"></span>' : 
+                            '<span class="status-dot offline"></span>'
+                        }
+                        </td>
+                        <td>${student.firstname}</td>
+                        <td>${student.lastname}</td>
+                        <td>${student.email}</td>
+                        <td>
+                          ${student.enrollment_date}
+                        </td>
+                        <td>
+                          <a href="${studentUrls.editStudent}${student.id}/" class="btn btn-primary btn-sm">Edit Student</a>
+                        </td>
+                        <td>
+                          <a href="${studentUrls.viewStudent}${student.id}/" class="btn btn-dark btn-sm">Student Profile</a>
+                        </td>
+                        <td>
+                          <a href="${studentUrls.deleteurls}${student.id}/" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to Delete him')">Delete</a>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+
+            function filterTable() {
+                const searchText = searchInput.value.toLowerCase();
+                const filterBy = filterSelect.value;
+                const filteredGrades = students.filter(student => {
+                    if (!filterBy) {
+                        // If no filter is selected, search across all fields
+                        return Object.keys(student).some(key => 
+                            student[key].toString().toLowerCase().includes(searchText)
+                        );
+                    } else {
+                        // If a filter is selected, search within that specific field
+                        return student[filterBy].toString().toLowerCase().includes(searchText);
+                    }
+                });
+                populateTable(filteredGrades);
+            }
+
+            searchInput.addEventListener('input', filterTable);
+            filterSelect.addEventListener('change', filterTable);
+
+            populateTable(students); // Initial population of the table
+          });
+      // students table logic end
+
+      // Teachers table logic start
+
+          document.addEventListener('DOMContentLoaded', function () {
+            const teachers = {{staff_json|safe}}
+            const teachersTable = document.getElementById('teachersTable');
+            const searchTeachersInput = document.getElementById('searchTeachersInput');
+            const filterTeachersSelect = document.getElementById('filterTeachersSelect');
+            const urls = {
+              addTeacher: "{% url 'addTeacher' 0 %}".replace('/0/', '/'),
+              editStaff: "{% url 'editStaff' 0 %}".replace('/0/', '/'),
+              viewStaff: "{% url 'viewStaff' 0 %}".replace('/0/', '/'),
+          };
+
+
+          // Check if the elements exist before adding event listeners
+            if (searchTeachersInput && filterTeachersSelect) {
+              function populateTeachersTable(items) {
+                  teachersTable.innerHTML = items.map(teacher => `
+                      <tr>
+                          <td>
+                              <img src="${teacher.avatar}" class="avatar" alt="avatar">
+                              <span class="status-dot online"></span>
+                          </td>
+                          <td>${teacher.firstname}</td>
+                          <td>${teacher.lastname}</td>
+                          <td>${teacher.email}</td>
+                          <td>${teacher.work_title}</td>
+                          <td>${teacher.start_work_date}</td>
+                          <td>
+                            <a href="${urls.addTeacher}${teacher.id}/" class="btn btn-primary btn-sm">Assign Teaching</a>
+                          </td>
+                          <td>
+                            <a href="${urls.editStaff}${teacher.id}/" class="btn btn-dark btn-sm">Edit Staff</a>
+                          </td>
+                          <td>
+                            <a href="${urls.viewStaff}${teacher.id}/" class="btn btn-success btn-sm">View Staff</a>
+                          </td>
+                          
+                      </tr>
+                  `).join('');
+              }
+
+              function filterTeachersTable() {
+                  const teachersSearchText = searchTeachersInput.value.toLowerCase();
+                  const teachersFilterBy = filterTeachersSelect.value;
+                  const filteredTeachers = teachers.filter(teacher => {
+                      if (!teachersFilterBy) {
+                          // If no filter is selected, search across all fields
+                          return Object.keys(teacher).some(key => 
+                              teacher[key].toString().toLowerCase().includes(teachersSearchText)
+                          );
+                      } else {
+                          // If a filter is selected, search within that specific field
+                          return teacher[teachersFilterBy].toString().toLowerCase().includes(teachersSearchText);
+                      }
+                  });
+                  populateTeachersTable(filteredTeachers);
+              }
+
+              searchTeachersInput.addEventListener('input', filterTeachersTable);
+              filterTeachersSelect.addEventListener('change', filterTeachersTable);
+
+              populateTeachersTable(teachers); // Initial population of the table
+          } else {
+              console.error('Elements not found: searchTeachersInput or filterTeachersSelect');
+          }
+        });
+      //Teachers table logic end
+    </script> 
+
+</body>
+</html>
