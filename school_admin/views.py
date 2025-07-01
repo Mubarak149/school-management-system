@@ -951,7 +951,7 @@ def subject_update(request, pk):
             return redirect('subject_list_create')
     else:
         form = SubjectForm(instance=subject)
-    return render(request, 'subjects/subject_update.html', {'form': form})
+    return render(request, 'school-admin/subject/subject_update.html', {'form': form})
 
 # ✅ Delete Subject
 def subject_delete(request, pk):
@@ -959,5 +959,5 @@ def subject_delete(request, pk):
     if request.method == 'POST':
         subject.delete()
         return redirect('subject_list_create')
-    return render(request, 'subjects/subject_confirm_delete.html', {'subject': subject})
+    return render(request, 'school-admin/subject/subject_confirm_delete.html', {'subject': subject})
 #End Subjects
