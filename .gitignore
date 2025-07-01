@@ -39,3 +39,13 @@ staticfiles/
 
 #test files
 testcode.py
+
+#enviroment variable
+.env
+
+#token: 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
+
+#User: excomsgc_admin
+#Database: excomsgc_excosgi
+#pass: jhbYKBj;]u(}
+# ssh pass: 9kP;N^G}-~ke

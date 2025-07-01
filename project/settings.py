@@ -2,6 +2,10 @@ from django.urls import reverse_lazy
 from pathlib import Path
 import os
 from django.contrib.messages import constants as message_constants
+import environ
+import os
+
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,22 +15,26 @@ MESSAGE_TAGS = {
     message_constants.ERROR: 'danger',
 }
 
+# Initialise environment variables
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+
+# reading .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5e56inq^om=oqoa$7mh*qon7!8psk+vjf@r6=rn_o1v-de4c4q'
+
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['excosg.local', 'localhost', '127.0.0.1', 'muubii.pythonanywhere.com', 'excomsg.com.ng']
-#token: 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
-
-#User: excomsgc_admin
-#Database: excomsgc_excosgi
-#pass: jhbYKBj;]u(}
-# ssh pass: 9kP;N^G}-~ke
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
