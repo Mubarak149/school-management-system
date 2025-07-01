@@ -11,10 +11,10 @@ class Admin(models.Model):
     
 class SchoolClass(models.Model):
     classes = (
-        ('lb','Lower Basic'),
-        ('mb','Middle Basic'),
-        ('ub','Upper Basic'),
-        ('ss', 'SS'),
+        ('ns','Nursery'),
+        ('pr','Primary'),
+        ('js','Junior Secondary'),
+        ('ss', 'Senior Secondary'),
     )
     category = (
         ('science','Science'),
