@@ -83,3 +83,19 @@ class BlogPost(models.Model):
     def __str__(self):
         return f"{self.title} - {self.date_sent}"  
 
+from django.db import models
+
+class SiteSetting(models.Model):
+    school_name = models.CharField(max_length=255, default="Excellent Community School Giwa")
+    logo = models.ImageField(upload_to='logos/', default='default_logo.jpg')
+    primary_color = models.CharField(max_length=20, default="#000000")  # hex code for navbar etc
+    news_sticker_text = models.TextField(default="Welcome to our school website...")
+    contact_email = models.EmailField(default="info@example.com")
+    contact_phone = models.CharField(max_length=20, default="+234 567 88 90")
+    facebook_link = models.URLField(blank=True, null=True)
+    instagram_link = models.URLField(blank=True, null=True)
+    whatsapp_link = models.URLField(blank=True, null=True)
+    # add other global settings as needed
+
+    def __str__(self):
+        return "Site Settings"
