@@ -8,34 +8,65 @@ class Admin(models.Model):
     initial_work_date = models.DateField(auto_now_add=True)
     pic = models.ImageField(upload_to='staff_media', default='avater.avif')
  
-    
+
 class SchoolClass(models.Model):
-    classes = (
-        ('ns','Nursery'),
-        ('pr','Primary'),
-        ('js','Junior Secondary'),
-        ('ss', 'Senior Secondary'),
+    CLASS_LEVEL_CHOICES = (
+        ('nursery', 'Nursery'),
+        ('primary', 'Primary'),
+        ('junior_secondary', 'Junior Secondary'),
+        ('senior_secondary', 'Senior Secondary'),
+        ('college', 'College'),
+        ('other', 'Other'),
     )
-    category = (
-        ('science','Science'),
-        ('art','Art'), 
-        ('commercial','Commercial'),
-        ('none','None'),
+
+    CLASS_TYPE_CHOICES = (
+        ('a', 'A'),
+        ('b', 'B'),
+        ('c', 'C'),
+        ('d', 'D'),
+        ('other', 'Other'),
     )
-    class_type_choice = (
-        ('a','A'),
-        ('b','B'),
-        ('c','C'),
-        ('d','D'),
-        
+
+    CATEGORY_CHOICES = (
+        ('science', 'Science'),
+        ('art', 'Art'),
+        ('commercial', 'Commercial'),
+        ('general', 'General'),
+        ('none', 'None'),
     )
-    class_name = models.CharField(choices=classes,default='lb',max_length=10)
-    class_no = models.IntegerField()
-    class_type = models.CharField(choices=class_type_choice,default='a',max_length=12)
-    class_category = models.CharField(choices=category,default='none', max_length=50)
-    
+
+    # Class level: Nursery, Primary, etc.
+    class_level = models.CharField(
+        max_length=20,
+        choices=CLASS_LEVEL_CHOICES,
+        default='primary'
+    )
+
+    # Class name or number (e.g. 1, 2, Basic 3, SS1)
+    class_name = models.CharField(max_length=50)
+
+    # Type within class (A, B, etc.)
+    class_type = models.CharField(
+        max_length=10,
+        choices=CLASS_TYPE_CHOICES,
+        default='a'
+    )
+
+    # Academic category (Science, Art, etc.)
+    class_category = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default='general'
+    )
+
     def __str__(self):
-        return f'{self.class_name} {self.class_no}{self.class_type} {self.class_category}'
+        return f"{self.get_class_level_display()} {self.class_name}{self.class_type.upper()} ({self.class_category.capitalize()})"
+
+    class Meta:
+        ordering = ['class_level', 'class_name', 'class_type']
+        verbose_name = "School Class"
+        verbose_name_plural = "School Classes"
+
     
 class Subjects(models.Model):
     name = models.CharField(max_length=50)

@@ -40,7 +40,10 @@ urlpatterns = [
     path('subjects/', adminviews.subject_list_create, name='subject_list_create'),
     path('subjects/<int:pk>/edit/', adminviews.subject_update, name='subject_update'),
     path('subjects/<int:pk>/delete/', adminviews.subject_delete, name='subject_delete'),
-
+    path('classes/', adminviews.schoolclass_list, name='class_list'),
+    path('classes/create/', adminviews.schoolclass_create, name='class_create'),
+    path('classes/<int:pk>/update/', adminviews.schoolclass_update, name='class_update'),
+    path('classes/<int:pk>/delete/', adminviews.schoolclass_delete, name='class_delete'),
     # end admin url
     
     # staff url 

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-dark text-white">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-uppercase" href="/">Excellent Community School Giwa</a>
+  </div>
+</nav>
+
+<div class="container mt-5 pt-5">
+  <h2 class="mb-4">Classes</h2>
+
+  <!-- Add Class Form -->
+  <div class="card bg-dark text-white mb-4">
+    <div class="card-header">Add New Class</div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+        
+            <div class="mb-3">
+                <label for="{{ form.class_level.id_for_label }}" class="form-label">Class Level</label>
+                {{ form.class_level }}
+                <div class="form-text text-muted">
+                    Select the educational level (e.g. Nursery, Primary, Junior Secondary, Senior Secondary).
+                </div>
+                {{ form.class_level.errors }}
+            </div>
+        
+            <div class="mb-3">
+                <label for="{{ form.class_name.id_for_label }}" class="form-label">Class Name/Number</label>
+                {{ form.class_name }}
+                <div class="form-text text-muted">
+                    Enter the class number or name identifier (e.g. 1, 2, 3, or Basic 1, JSS 1).
+                </div>
+                {{ form.class_name.errors }}
+            </div>
+        
+            <div class="mb-3">
+                <label for="{{ form.class_type.id_for_label }}" class="form-label">Class Type</label>
+                {{ form.class_type }}
+                <div class="form-text text-muted">
+                    Choose the class type (e.g. A, B, C, D) to differentiate streams if your school splits classes.
+                </div>
+                {{ form.class_type.errors }}
+            </div>
+        
+            <div class="mb-3">
+                <label for="{{ form.class_category.id_for_label }}" class="form-label">Class Category</label>
+                {{ form.class_category }}
+                <div class="form-text text-muted">
+                    Select the category of the class (Science, Art, Commercial, or None).
+                </div>
+                {{ form.class_category.errors }}
+            </div>
+        
+            <button type="submit" class="btn btn-success">Add Class</button>
+        </form>
+        
+          
+    </div>
+  </div>
+
+  <!-- Class List -->
+  <div class="card bg-dark text-white">
+    <div class="card-header">All Classes</div>
+    <div class="card-body">
+      {% if classes %}
+      <table class="table table-dark table-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Level</th>
+            <th>Name/Number</th>
+            <th>Type</th>
+            <th>Category</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for cls in classes %}
+          <tr>
+            <th>{{ forloop.counter }}</th>
+            <td>{{ cls.get_class_level_display }}</td>
+            <td>{{ cls.class_name }}</td>
+            <td>{{ cls.get_class_type_display }}</td>
+            <td>{{ cls.get_class_category_display }}</td>
+            <td>
+              <a href="{% url 'class_update' cls.pk %}" class="btn btn-primary btn-sm">Edit</a>
+              <a href="{% url 'class_delete' cls.pk %}" class="btn btn-danger btn-sm">Delete</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="6">No classes added yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      
+      {% else %}
+      <p>No classes added yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

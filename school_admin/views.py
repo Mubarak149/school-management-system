@@ -961,3 +961,40 @@ def subject_delete(request, pk):
         return redirect('subject_list_create')
     return render(request, 'school-admin/subject/subject_confirm_delete.html', {'subject': subject})
 #End Subjects
+
+def schoolclass_create(request):
+    if request.method == 'POST':
+        form = SchoolClassForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('class_list')
+    else:
+        form = SchoolClassForm()
+    return render(request, 'school-admin/classes/schoolclass_form.html', {'form': form, 'title': 'Add New Class'})
+
+def schoolclass_list(request):
+    classes = SchoolClass.objects.all()
+    form = SchoolClassForm()
+    if request.method == 'POST':
+        schoolclass_create(request)
+        
+    return render(request, 'school-admin/classes/classes.html', {'classes': classes ,'form': form,})
+
+
+def schoolclass_update(request, pk):
+    instance = get_object_or_404(SchoolClass, pk=pk)
+    if request.method == 'POST':
+        form = SchoolClassForm(request.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect('class_list')
+    else:
+        form = SchoolClassForm(instance=instance)
+    return render(request, 'school-admin/classes/class_update.html', {'form': form, 'title': 'Edit Class'})
+
+def schoolclass_delete(request, pk):
+    instance = get_object_or_404(SchoolClass, pk=pk)
+    if request.method == 'POST':
+        instance.delete()
+        return redirect('class_list')
+    return render(request, 'school-admin/classes/class_confirm_delete.html', {'object': instance})

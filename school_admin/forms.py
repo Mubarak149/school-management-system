@@ -53,3 +53,15 @@ class SubjectForm(forms.ModelForm):
     class Meta:
         model = Subjects
         fields = ['name']
+        
+
+class SchoolClassForm(forms.ModelForm):
+    class Meta:
+        model = SchoolClass
+        fields = ['class_level', 'class_name', 'class_type', 'class_category']
+        widgets = {
+            'class_level': forms.Select(attrs={'class': 'form-control'}),
+            'class_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'class_type': forms.Select(attrs={'class': 'form-control'}),
+            'class_category': forms.Select(attrs={'class': 'form-control'}),
+        }
