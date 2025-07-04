@@ -83,19 +83,31 @@ class BlogPost(models.Model):
     def __str__(self):
         return f"{self.title} - {self.date_sent}"  
 
-from django.db import models
 
 class SiteSetting(models.Model):
-    school_name = models.CharField(max_length=255, default="Excellent Community School Giwa")
-    logo = models.ImageField(upload_to='logos/', default='default_logo.jpg')
-    primary_color = models.CharField(max_length=20, default="#000000")  # hex code for navbar etc
-    news_sticker_text = models.TextField(default="Welcome to our school website...")
-    contact_email = models.EmailField(default="info@example.com")
-    contact_phone = models.CharField(max_length=20, default="+234 567 88 90")
-    facebook_link = models.URLField(blank=True, null=True)
-    instagram_link = models.URLField(blank=True, null=True)
-    whatsapp_link = models.URLField(blank=True, null=True)
-    # add other global settings as needed
+    site_name = models.CharField(max_length=100, default="Excellent Community School")
+    logo = models.ImageField(upload_to='site/logo/', null=True, blank=True)
+    principal_pic = models.ImageField(upload_to='site/principal/', null=True, blank=True)
+    banner1 = models.ImageField(upload_to='site/banner/', null=True, blank=True)
+    banner1_title = models.CharField(max_length=255, null=True, blank=True)
+    banner1_text = models.TextField(null=True, blank=True)
+
+    banner2 = models.ImageField(upload_to='site/banner/', null=True, blank=True)
+    banner2_title = models.CharField(max_length=255, null=True, blank=True)
+    banner2_text = models.TextField(null=True, blank=True)
+
+    banner3 = models.ImageField(upload_to='site/banner/', null=True, blank=True)
+    banner3_title = models.CharField(max_length=255, null=True, blank=True)
+    banner3_text = models.TextField(null=True, blank=True)
+
+    contact_email = models.EmailField()
+    contact_phone = models.CharField(max_length=20)
+    facebook_link = models.URLField(null=True, blank=True)
+    instagram_link = models.URLField(null=True, blank=True)
+    whatsapp_link = models.URLField(null=True, blank=True)
+    google_link = models.URLField(null=True, blank=True)
+
+    primary_color = models.CharField(max_length=7, default="#000000")  # For dynamic CSS colors
 
     def __str__(self):
-        return "Site Settings"
+        return self.site_name
