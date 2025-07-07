@@ -1,0 +1,45 @@
+<footer class="text-center text-lg-start bg-light text-muted py-3">
+    <section class="">
+      <div class="container text-center text-md-start mt-5">
+        <div class="row mt-3">
+          <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+            <h6 class="text-uppercase fw-bold mb-4">
+              <img src="{{ site_settings.logo.url }}" width="100" height="120" alt="logo"><br>
+              {{ site_settings.site_name }}
+            </h6>
+            <p>{{ site_settings.footer_text }}</p>
+          </div>
+          <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+            <h6 class="text-uppercase fw-bold mb-4">Quick Links</h6>
+            <p><a href="{% url 'about' %}" class="text-reset">About</a></p>
+            <p><a href="{% url 'admission' %}" class="text-reset">Admissions</a></p>
+            <p><a href="{% url 'gallery' %}" class="text-reset">Gallery</a></p>
+            <p><a href="{% url 'contact' %}" class="text-reset">Contact Us</a></p>
+          </div>
+          <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+            <h6 class="text-uppercase fw-bold mb-4">Useful links</h6>
+            <p><a href="#!" class="text-reset">FAQ</a></p>
+            <p><a href="#!" class="text-reset">Help</a></p>
+          </div>
+          <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+            <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+            <p><i class="fas fa-envelope me-3"></i>{{ site_settings.contact_email }}</p>
+            <p><i class="fas fa-phone me-3"></i>{{ site_settings.contact_phone }}</p>
+            <p><i class="fas fa-home me-3"></i> {{ site_settings.address }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom mb-0">
+      <div class="me-5 d-none d-lg-block">
+        <span>Get connected with us on social networks:</span>
+      </div>
+      <div>
+        <a href="{{ site_settings.facebook_link }}" class="me-4 text-reset"><i class="fab fa-facebook-f"></i></a>
+        <a href="{{ site_settings.instagram_link }}" class="me-4 text-reset"><i class="fab fa-instagram"></i></a>
+        <a href="{{ site_settings.whatsapp_link }}" class="me-4 text-reset"><i class="fab fa-whatsapp"></i></a>
+        <a href="{{ site_settings.google_link }}" class="me-4 text-reset"><i class="fab fa-google"></i></a>
+      </div>
+    </section>
+  </footer>
+  

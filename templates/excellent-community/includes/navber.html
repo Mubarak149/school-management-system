@@ -1,0 +1,37 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand text-break" href="{% url 'main' %}">
+        <img src="{{ site_settings.logo.url }}" alt="logo" width="40" height="40" class="d-inline-block align-text-top" style="border-radius:50%;">
+        {{ site_settings.site_name }}
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto me-5">
+          <li class="nav-item"><a class="nav-link active" href="{% url 'main' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="staffDropdown" href="#" role="button" data-bs-toggle="dropdown">Managements</a>
+            <ul class="dropdown-menu" aria-labelledby="staffDropdown">
+              <li><a class="dropdown-item" href="{% url 'staffHierarchy' %}">Administratives</a></li>
+              <li><hr class="dropdown-divider bg-primary"></li>
+              <li><a class="dropdown-item" href="{% url 'excosgStaff' %}">Staff</a></li>
+            </ul>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'admission' %}">Admissions</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'gallery' %}">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'Blog' %}">Blogs</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'graduateView' %}">Verify Me</a></li>
+          <li class="nav-item"><a class="btn btn-login" href="#loginModal" data-bs-toggle="modal">Login</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- News Sticker -->
+  <div class="newsSticker container-fluid text-truncate" id="newsSticker">
+    {{ site_settings.latest_news }}
+  </div>
+  
