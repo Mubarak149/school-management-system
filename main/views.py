@@ -149,10 +149,22 @@ def admission(request):
     return render(request, 'excellent-community/admission.html', context)
 
 def staff_hierarchy(request):
-    context = {
-            'login_form': CustomAuthenticationForm()
-        }
-    return render(request, 'excellent-community/administratives.html', context)
+    admin_positions = [
+        '1',  # Director
+        '2',  # Principal
+        '3',  # VP Administration
+        '4',  # VP Academic
+        '5',  # Senior Master Admin
+        '7',  # Bursar
+        '24', # Head Master
+    ]
+
+    administratives = Staff.objects.filter(work_title__in=admin_positions, still_work=True).order_by('work_title')
+
+    return render(request, 'excellent-community/administratives.html', {
+        'administratives': administratives
+    })
+
 
 def blog_view(request):
     blogs = BlogPost.objects.order_by('-date_sent')
