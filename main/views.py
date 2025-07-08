@@ -7,41 +7,10 @@ from .forms import CustomAuthenticationForm
 from django.contrib import messages
 from staff.models import Staff
 from student.models import Student, StudentPromotionRecord
-from school_admin.models import BlogPost, SchoolClass
 from .models import *
 # Create your views here.
 
-def create_admission_numbers():
-    current_session = AcademicSession.objects.last()  # Get the latest academic session
-    
-    for student in Student.objects.all():
-        # Ensure the student has a current class
-        student_class = student.get_current_class()
-        if not student_class:
-            print(f"Skipping {student}: No current class assigned.")
-            continue
-
-        # Ensure an admission record does not already exist for this student and session
-        if Admission.objects.filter(student=student, session=current_session).exists():
-            print(f"Skipping {student}: Admission record already exists.")
-            continue
-
-        category = student_class.class_name  # Extract category from the class
-        position_count = Admission.objects.filter(category=category, session=current_session).count() + 1
-
-        # Create admission record
-        admission = Admission.objects.create(
-            student=student,
-            session=current_session,
-            category=category,
-            position_count=position_count
-        )
-
-        print(f"Created Admission No: {admission.admission_no} for {student}")
-    
 def main(request):
-    # Admission.objects.all().delete()
-    # create_admission_numbers()
     if request.method == 'POST':
         # Create a copy of POST data and convert the username to lowercase
         post_data = request.POST.copy()
@@ -86,36 +55,9 @@ def main(request):
     return render(request, 'excellent-community/index.html', context)
 
 
-
 def logout_view(request):
     logout(request)
     return redirect(reverse('main'))
-
-def staff(request):
-    STAFF_PER_ROW = 3
-    
-    def chunk_staff_list(staff_list, chunk_size):
-        """Split staff list into rows of specified size"""
-        return [staff_list[i:i + chunk_size] for i in range(0, len(staff_list), chunk_size)]
-
-    try:
-        # Get all active staff members
-        active_staff_list = list(Staff.objects.filter(still_work=True))
-        
-        # Organize staff into rows
-        staff_rows = chunk_staff_list(active_staff_list, STAFF_PER_ROW)
-        
-    except ObjectDoesNotExist:
-        messages.error(request, "No active staff members found.")
-        staff_rows = []
-
-    context = {
-        'login_form': CustomAuthenticationForm(),
-        'staffs': staff_rows,
-        'range_list': range(STAFF_PER_ROW),
-    }
-    
-    return render(request, 'excellent-community/staff.html', context)
 
 def about(request):
     context = {
