@@ -1,12 +1,12 @@
-import json
-from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
+from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from .forms import CustomAuthenticationForm
 from django.contrib import messages
 from staff.models import Staff
-from student.models import Student, StudentPromotionRecord
+from .models import Admission
+from student.models import StudentsGrade, StudentPromotionRecord, StudentSchoolFees
 from .models import *
 # Create your views here.
 
@@ -99,10 +99,6 @@ def staff_hierarchy(request):
         'administratives': administratives
     })
 
-from django.shortcuts import render, get_object_or_404
-from django.contrib import messages
-from .models import Admission, AcademicSession
-from student.models import Student, StudentsGrade, StudentPromotionRecord, StudentSchoolFees, StudentClass
 
 def search_student_academic_view(request):
     context = {}
