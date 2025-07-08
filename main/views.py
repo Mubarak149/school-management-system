@@ -124,23 +124,15 @@ def about(request):
         
     return render(request, 'excellent-community/about.html', context)
 
-def contact(request):
-    context = {
-            'login_form': CustomAuthenticationForm()
-        }
-    return render(request, 'excellent-community/contact.html', context)
-
 def status(request):
     context = {
             'login_form': CustomAuthenticationForm()
         }
     return render(request, 'excellent-community/Status.html', context)
 
-def gallery(request):
-    context = {
-            'login_form': CustomAuthenticationForm()
-        }
-    return render(request, 'excellent-community/gallery.html', context)
+def gallery_view(request):
+    images = GalleryImage.objects.all().order_by('-uploaded_at')
+    return render(request, 'excellent-community/gallery.html', {'images': images})
 
 def admission(request):
     context = {
@@ -164,28 +156,6 @@ def staff_hierarchy(request):
     return render(request, 'excellent-community/administratives.html', {
         'administratives': administratives
     })
-
-
-def blog_view(request):
-    blogs = BlogPost.objects.order_by('-date_sent')
-    #creating blog json using list comprehension start
-    blog_json = [
-                    {
-                    'id': blog.id,
-                    'title':blog.title,
-                    'content': blog.content,
-                    'pic': blog.pic.url,
-                    'date_sent': f'{blog.date_sent}'
-                    }
-                for blog in blogs  # Assuming `Staff` is your model
-                ]
-        #creating blog json end
-        
-    context = {
-            'blog_json': json.dumps(blog_json),
-            'login_form': CustomAuthenticationForm(),
-        }
-    return render(request, 'excellent-community/blog.html', context)
 
 def graduate_view(request):
     if request.method == "POST":

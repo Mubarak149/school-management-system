@@ -140,3 +140,14 @@ class AcademicSession(models.Model):
         term='1',  # Replace with the desired term
     )
         return grades
+
+
+
+class GalleryImage(models.Model):
+    title = models.CharField(max_length=255, blank=True, null=True)
+    image = models.ImageField(upload_to='gallery_images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title if self.title else f"Image {self.id}"
+
