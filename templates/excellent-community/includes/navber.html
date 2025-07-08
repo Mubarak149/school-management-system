@@ -31,7 +31,32 @@
   </nav>
   
   <!-- News Sticker -->
-  <div class="newsSticker container-fluid text-truncate" id="newsSticker">
-    {{ site_settings.latest_news }}
+<div class="newsSticker container-fluid text-truncate" id="newsSticker">
+  {{ site_settings.latest_news }}
+</div>
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Login</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loginForm" method='post'>
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Email address</label>
+            {{ login_form.username }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            {{ login_form.password }}
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Login</button>
+        </form>
+      </div>
+    </div>
   </div>
-  
+</div>
