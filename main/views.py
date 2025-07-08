@@ -157,70 +157,47 @@ def staff_hierarchy(request):
         'administratives': administratives
     })
 
-def graduate_view(request):
-    if request.method == "POST":
-        admission_number = request.POST.get('admission', '').strip()
+from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
+from .models import Admission, AcademicSession
+from student.models import Student, StudentsGrade, StudentPromotionRecord, StudentSchoolFees, StudentClass
+
+def search_student_academic_view(request):
+    context = {}
+    
+    if request.method == 'POST':
+        admission_number = request.POST.get('admission').strip()
         
         try:
-            # Extract the category from the admission number (e.g., 'UPB' from 'ECSG/UPB//2024/2025//1')
-            section = admission_number.split('/')[1].upper()
-
-            # Map category code to database values
-            category_mapping = {
-                'LWB': 'lb',
-                'MDLB': 'mb',
-                'UPB': 'ub',
-                'SS': 'ss'
-            }
-            
-            if section not in category_mapping:
-                messages.error(request, "Invalid Admission Number Format")
-                return redirect(reverse('graduate_view'))
-
-            # Retrieve the Admission record based on admission_no
-            admission_obj = get_object_or_404(Admission, admission_no=admission_number)
-
-            # Get all promotion records for the student
-            promotion_records = list(StudentPromotionRecord.objects.filter(student=admission_obj.student))
-
-            if not promotion_records:
-                messages.error(request, "No Promotion Records Found")
-                return redirect(reverse('graduate_view'))
-
-            last_record = promotion_records[-1]
-            student_classes = SchoolClass.objects.filter(studentclass__student=admission_obj.student)
-
-            # Check graduation condition (if student has reached final class)
-            class_condition = (
-                last_record.promoted_class.id == student_classes.last().id or
-                (len(student_classes) > 1 and last_record.promoted_class.id == list(student_classes)[-2].id)
+            # Find the Admission record by matching admission_no property dynamically
+            all_admissions = Admission.objects.all()
+            admission_obj = next(
+                (adm for adm in all_admissions if adm.admission_no == admission_number),
+                None
             )
 
-            # Prepare student JSON data
-            student_json = [{
-                'id': admission_obj.student.id,
-                'name': f"{admission_obj.student.user.first_name} {admission_obj.student.user.last_name}",
-                'reg_no': admission_obj.admission_no,
-                'pic': admission_obj.student.pic.url if admission_obj.student.pic else None,
-                'graduation_date': str(last_record.promotion_date),
-                'graduation_status': class_condition
-            }]
+            if not admission_obj:
+                raise ValueError("No student found with that admission number.")
 
-            # Prepare classes JSON data
-            classes_json = [{
-                'id': record.id,
-                'class_name': f"{record.get_class_name_display()} {record.class_no} {record.get_class_type_display()} {record.get_class_category_display()}",
-            } for record in student_classes]
+            student = admission_obj.student
+
+            # Retrieve academic records
+            current_class = student.get_current_class()
+            grades = StudentsGrade.objects.filter(student=student).select_related('subject', 'the_class', 'grade_session')
+            promotions = StudentPromotionRecord.objects.filter(student=student).select_related('promoted_class', 'promotion_session')
+            fees = StudentSchoolFees.objects.filter(student=student).select_related('paid_session')
 
             context = {
-                'student_json': json.dumps(student_json),
-                'classes_json': json.dumps(classes_json),
+                'student': student,
+                'admission': admission_obj,
+                'current_class': current_class,
+                'grades': grades,
+                'promotions': promotions,
+                'fees': fees,
+                'admission_number': admission_number
             }
-            return render(request, 'excellent-community/studentDetails.html', context)
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+            print(f"Search Error: {e}")
 
-        except ObjectDoesNotExist as e:
-            messages.error(request, 'Student or promotion record not found.')
-            print(f'Error: {str(e)}')  # Debugging
-            return redirect(reverse('graduate_view'))
-
-    return render(request, "excellent-community/searchStudent.html")
+    return render(request, 'excellent-community/searchStudent.html', context)

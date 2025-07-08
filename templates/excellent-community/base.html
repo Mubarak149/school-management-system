@@ -23,7 +23,13 @@
 <body>
   <!-- Navbar -->
   {% include 'excellent-community/includes/navber.html' %}
-  
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
   <!-- Content -->
   {% block content %}{% endblock %}
 

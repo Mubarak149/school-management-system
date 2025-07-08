@@ -5,53 +5,11 @@ from django.core.exceptions import ValidationError
 
         
 class Admission(models.Model):
-    CATEGORY = (
-        ('lb','lwb'),
-        ('mb','mdlb'),
-        ('ub','upb'),
-        ('ss','ss')
-    )
     student = models.ForeignKey("student.Student", on_delete=models.CASCADE)
-    session = models.ForeignKey("main.AcademicSession", on_delete=models.CASCADE)
-    branch = models.CharField(max_length=50, default="ECSG")
-    category = models.CharField(max_length=50, choices=CATEGORY)
-    position_count = models.IntegerField()
+    admission_no = models.CharField(max_length=50)
     
     class Meta:
-        unique_together = ('student', 'session', 'position_count')  # Ensure one record per student-session pair
-        
-    
-    @property
-    def admission_no(self):
-        """Dynamically generate the admission number including the category"""
-        session = self.session
-        category_display = dict(self.CATEGORY).get(self.category, self.category).upper()
-        count = self.position_count
-
-        return f"{self.branch}/{category_display}//{session.start_year}/{session.end_year}//{count}"
-    
-    @classmethod
-    def generate_admission_no(cls, student):
-        category = student.studentclass_set.get(current_class=True).student_class.class_name
-        session = student.enrollment_session
-        count = cls.objects.filter(category=category, session=session).count() + 1
-        # Get the default branch value
-        branch_default = 'ECSG'
-        return f"{branch_default}/{category.upper()}//{session.start_year}/{session.end_year}//{count}"
-    
-    @classmethod
-    def get_students_by_category(cls, category):
-        """Return all students in a specific category."""
-        from student.models import Student
-        return Student.objects.filter(admission__category=category)
-    
-    def save(self, *args, **kwargs):
-        """Assign a unique position count for the category before saving"""
-        if self.position_count is None:  # Ensure we only assign if it's a new record
-            last_count = Admission.objects.filter(category=self.category, session=self.session).count()
-            self.position_count = last_count + 1  # Increment count for this category
-        
-        super().save(*args, **kwargs)
+        unique_together = ('student', 'admission_no')
         
 
 class AcademicSession(models.Model):

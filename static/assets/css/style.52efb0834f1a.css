@@ -200,9 +200,10 @@
 /* administrative card */
 .card {
     transition: transform 0.5s ease, opacity 0.5s ease;
-    opacity: 0.5;
-    transform: scale(0.95);
+    opacity: 1; /* previously 0.5 */
+    transform: scale(1); /* previously 0.95 */
 }
+
 .card.in-view {
     transform: scale(1);
     opacity: 1;
@@ -226,3 +227,26 @@
     background-color: var(--primary-color);
     box-shadow: 0 2px 4px rgba(0, 91, 187, 0.2);
 }
+/* Ensure form input and button are crisp */
+input.form-control,
+button.btn {
+  font-size: 1rem;
+  color: #212529; /* Bootstrap default text color */
+}
+
+/* Fix blurry text due to transform or scaling issues in site CSS */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* Smooth focus effect */
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(50, 2, 2, 0.25);
+    border-color: var(--primary-color);
+  }
+  
+  /* Smooth button hover */
+  .btn:hover {
+    opacity: 0.9;
+  }
+  

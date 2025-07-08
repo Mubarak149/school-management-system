@@ -10,7 +10,7 @@ urlpatterns = [
     path("Staffs", views.staff_hierarchy, name="staffHierarchy"),
     #path("promotion-status", views.status, name="promotionStatus"),
     path("admission", views.admission, name="admission"),
-    path("graduate", views.graduate_view, name="graduateView"),
+    path("graduate", views.search_student_academic_view, name="graduateView"),
     path("logout", views.logout_view, name="logout"),
 ]
 
