@@ -560,13 +560,6 @@ def delete_student(request, pk):
     return redirect(reverse('adminHome'))
     
 def students_view(request):
-    
-    CLASS_NAME_DISPLAY = {
-    'lb': 'Lower Basic',
-    'mb': 'Middle Basic',
-    'ub': 'Upper Basic',
-    'ss': 'Senior Secondary',
-    }
     classes = SchoolClass.objects.all()
     records = []  # Initialize records list outside the loop
     session = AcademicSession.objects.get(is_current=True)
@@ -582,16 +575,14 @@ def students_view(request):
         for student in students_in_class:
             # Fetch the admission number from the correct model (adjust based on your logic)
             try:
-                admission_record = Admission.objects.get(student=student,session=session)
+                admission_record = Admission.objects.get(student=student)
                 admission_no = admission_record.admission_no if admission_record else 'N/A'
             except (Admission.DoesNotExist, AttributeError):
                 admission_no = 'N/A'  # Handle cases where admission record is not found
-                
-            class_name_display = the_class.get_class_name_display()
 
             # Append the student's class and admission details to the records
             records.append({
-                'class_name': f"{class_name_display} {the_class.class_no}{the_class.class_type.upper()}",
+                'class_name': f"{the_class.class_level} {the_class.class_name} {the_class.class_type.upper()}",
                 'student_count': student_count,
                 'name': student.user.first_name,   # Assuming 'user' is a related field in the Student model
                 'surname': student.user.last_name, # Adjust if necessary
