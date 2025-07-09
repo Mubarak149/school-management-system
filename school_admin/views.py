@@ -634,12 +634,6 @@ def assign_positions(data, score_key='total_score'):
 def students_term_score(request):
     if request.method == "POST":  
         # Mapping class codes to display names (for easy readability)
-        CLASS_NAME_DISPLAY = {
-            'lb': 'Lower Basic',
-            'mb': 'Middle Basic',
-            'ub': 'Upper Basic',
-            'ss': 'Senior Secondary',
-        }
         classes = SchoolClass.objects.all()
         records = []  # Initialize records list outside the loop
         academic_session = AcademicSession.objects.get(is_current=True)
@@ -660,14 +654,12 @@ def students_term_score(request):
                 # Try to fetch the admission number based on the class
                 admission_no = 'N/A'  # Default value in case we can't find it
                 try:
-                    admission_record = Admission.objects.get(student=student,session=academic_session, category=the_class.class_name)
+                    admission_record = Admission.objects.get(student=student)
                     admission_no = admission_record.admission_no if admission_record else 'N/A'
                 except (Admission.DoesNotExist, AttributeError):
                     # If no admission record is found, it stays 'N/A'
                     admission_no = 'N/A'
 
-                # Get the class name in a readable format (e.g., Lower Basic 1A)
-                class_name_display = the_class.get_class_name_display()
                 # Calculate the total score for the student in the current term
                 term = request.POST.get('term')
                 session = request.POST.get('session')
@@ -677,7 +669,7 @@ def students_term_score(request):
                     academic_session  # Replace with the current year if needed
                 )
                 the_student_record = {
-                    'class_name': f"{class_name_display} {the_class.class_no}{the_class.class_type.upper()}",  # Class name and details
+                    'class_name': f"{the_class.class_level} {the_class.class_name} {the_class.class_type.upper()}",
                     'student_count': student_count,  # Number of students in the class
                     'name': student.user.first_name,  # Student's first name
                     'surname': student.user.last_name,  # Student's last name
