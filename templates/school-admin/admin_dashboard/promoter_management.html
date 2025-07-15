@@ -10,11 +10,7 @@
     <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Promoters</a>
-        </div>
-    </nav>
+    {% include 'school-admin/admin_dashboard/partials/admin_navber.html' %}
       <!-- alert -->
       {% if messages %}
       {% for message in messages %}
