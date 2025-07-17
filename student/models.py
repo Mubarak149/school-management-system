@@ -23,6 +23,7 @@ class Student(models.Model):
         ('other',"Other")
         )
     dob = models.DateField(auto_now=False, auto_now_add=False)
+    reg_no = models.CharField(null=True, blank=True, max_length=12, unique=True)
     nin = models.CharField(null=True, blank=True, max_length=12, default='No NIN')
     gender = models.CharField(choices=GENDER,default='other', max_length=50)
     enrollment_session = models.ForeignKey(AcademicSession, on_delete=models.CASCADE)

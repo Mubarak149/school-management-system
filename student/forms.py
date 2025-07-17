@@ -18,11 +18,12 @@ class StudentUserForm(forms.ModelForm):
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['dob','nin','gender','enrollment_date','pic']
+        fields = ['dob','nin','reg_no','gender','enrollment_date','pic']
         
         widgets = {
         'gender': forms.Select(attrs={'class': 'form-select', 'required': True}),
         'nin': forms.TextInput(attrs={'class': 'form-control','required': False}),
+        'reg_no': forms.TextInput(attrs={'class': 'form-control','required': False}),
         'pic': forms.FileInput(attrs={'class': 'form-control'}),
         }
         
