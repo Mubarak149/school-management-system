@@ -44,6 +44,7 @@ urlpatterns = [
     path('classes/create/', adminviews.schoolclass_create, name='class_create'),
     path('classes/<int:pk>/update/', adminviews.schoolclass_update, name='class_update'),
     path('classes/<int:pk>/delete/', adminviews.schoolclass_delete, name='class_delete'),
+    path('site-setting', adminviews.site_settings_view, name='site_settings'),
     # end admin url
     
     # staff url 

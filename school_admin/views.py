@@ -945,6 +945,7 @@ def subject_delete(request, pk):
     return render(request, 'school-admin/subject/subject_confirm_delete.html', {'subject': subject})
 #End Subjects
 
+# school class
 def schoolclass_create(request):
     if request.method == 'POST':
         form = SchoolClassForm(request.POST)
@@ -981,3 +982,20 @@ def schoolclass_delete(request, pk):
         instance.delete()
         return redirect('class_list')
     return render(request, 'school-admin/classes/class_confirm_delete.html', {'object': instance})
+
+#school class end
+
+#site setting
+
+def site_settings_view(request):
+    settings_instance = SiteSetting.objects.first()  # assuming singleton settings
+
+    if request.method == 'POST':
+        form = SiteSettingForm(request.POST, request.FILES, instance=settings_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('site_settings')
+    else:
+        form = SiteSettingForm(instance=settings_instance)
+
+    return render(request, 'school-admin/admin_dashboard/site_settings.html',{'form': form})

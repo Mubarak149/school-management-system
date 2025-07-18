@@ -65,3 +65,35 @@ class SchoolClassForm(forms.ModelForm):
             'class_type': forms.Select(attrs={'class': 'form-control'}),
             'class_category': forms.Select(attrs={'class': 'form-control'}),
         }
+        
+from django import forms
+from .models import SiteSetting
+
+class SiteSettingForm(forms.ModelForm):
+    class Meta:
+        model = SiteSetting
+        fields = '__all__'  # includes all fields
+
+        widgets = {
+            'mission': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'vision': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'banner1_text': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'banner2_text': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'banner3_text': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'school_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'principal_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'director_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'banner1_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'banner2_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'banner3_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'contact_email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'contact_phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'address': forms.TextInput(attrs={'class': 'form-control'}),
+            'facebook_link': forms.URLInput(attrs={'class': 'form-control'}),
+            'instagram_link': forms.URLInput(attrs={'class': 'form-control'}),
+            'whatsapp_link': forms.URLInput(attrs={'class': 'form-control'}),
+            'youtube_link': forms.URLInput(attrs={'class': 'form-control'}),
+            'primary_color': forms.TextInput(attrs={'type': 'color', 'class': 'form-control form-control-color'}),
+            'secondary_color': forms.TextInput(attrs={'type': 'color', 'class': 'form-control form-control-color'}),
+            'accent_color': forms.TextInput(attrs={'type': 'color', 'class': 'form-control form-control-color'}),
+        }
