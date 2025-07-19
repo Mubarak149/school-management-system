@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from custom_user.models import User
 from django.contrib.auth import authenticate
-
+from .models import *
         
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
@@ -49,3 +49,17 @@ class CustomAuthenticationForm(AuthenticationForm):
                 self.confirm_login_allowed(self.user_cache)
 
         return self.cleaned_data
+
+
+
+class GalleryForm(forms.ModelForm):
+    class Meta:
+        model = GalleryImage
+        fields = ['title', 'description', 'image']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Image Title'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Image Description', 'rows': 3}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+

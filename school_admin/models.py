@@ -6,6 +6,7 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from .utils import resize_image_field
 # Create your models here.
+
 class Admin(models.Model):
     user = models.OneToOneField("custom_user.User", on_delete=models.CASCADE)
     contact = models.CharField(max_length=50)
@@ -154,3 +155,5 @@ class SiteSetting(models.Model):
             self.banner3 = resize_image_field(self.banner3, 1200, 400)
 
         super().save(*args, **kwargs)
+    
+

@@ -45,6 +45,9 @@ urlpatterns = [
     path('classes/<int:pk>/update/', adminviews.schoolclass_update, name='class_update'),
     path('classes/<int:pk>/delete/', adminviews.schoolclass_delete, name='class_delete'),
     path('site-setting', adminviews.site_settings_view, name='site_settings'),
+    path('gallery/manage/', adminviews.manage_gallery, name='manage_gallery'),
+    path('gallery/edit/<int:pk>/', adminviews.edit_gallery_image, name='edit_gallery_image'),
+    path('gallery/delete/<int:pk>/', adminviews.delete_gallery_image, name='delete_gallery_image'),
     # end admin url
     
     # staff url 
@@ -66,3 +69,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

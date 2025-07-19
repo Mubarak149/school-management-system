@@ -104,6 +104,7 @@ class AcademicSession(models.Model):
 class GalleryImage(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True)
     image = models.ImageField(upload_to='gallery_images/')
+    description = models.TextField(blank=True, null=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

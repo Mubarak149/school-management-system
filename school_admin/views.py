@@ -9,6 +9,7 @@ from django.urls import reverse, reverse_lazy
 from django.contrib import messages
 from django.http import JsonResponse
 from main.models import *
+from main.forms import *
 from student.forms import *
 from staff.forms import *
 from staff.models import Staff
@@ -999,3 +1000,43 @@ def site_settings_view(request):
         form = SiteSettingForm(instance=settings_instance)
 
     return render(request, 'school-admin/admin_dashboard/site_settings.html',{'form': form})
+
+# gallery/views.py
+def manage_gallery(request):
+    gallery_images = GalleryImage.objects.all().order_by('-uploaded_at')
+    form = GalleryForm()
+
+    if request.method == 'POST':
+        form = GalleryForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Image uploaded successfully.')
+            return redirect('manage_gallery')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+
+    return render(request, 'school-admin/admin_dashboard/gallery_management.html', {'form': form, 'gallery_images': gallery_images})
+
+
+def edit_gallery_image(request, pk):
+    gallery_image = get_object_or_404(GalleryImage, pk=pk)
+    
+    if request.method == 'POST':
+        gallery_image.title = request.POST.get('title')
+        gallery_image.description = request.POST.get('description')
+        
+        if request.FILES.get('image'):
+            gallery_image.image = request.FILES.get('image')
+        
+        gallery_image.save()
+        messages.success(request, 'Image updated successfully.')
+        return redirect('manage_gallery')
+
+    return render(request, 'school-admin/admin_dashboard/edit_gallery_image.html', {'gallery_image': gallery_image})
+
+
+def delete_gallery_image(request, pk):
+    gallery_image = get_object_or_404(GalleryImage, pk=pk)
+    gallery_image.delete()
+    messages.success(request, 'Image deleted successfully.')
+    return redirect('manage_gallery')
