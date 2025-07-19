@@ -26,191 +26,153 @@
          <nav class="navbar-dark">
           <ul class="navbar-nav">
             <li>
-              <div class="text-muted fw-bold small text-uppercase px-2">
-              infor
-              </div>
+              <div class="text-muted fw-bold small text-uppercase px-2">Info</div>
             </li>
+          
             <li class="nav-item">
-           <a class="nav-link active" href="#!" onclick="showSection('dashboard')">
-            <span class="me-2">
-              <i class="bi bi-speedometer2"></i>
-            </span>
-            <span>Dashboard</span>
-           </a>
+              <a class="nav-link active" href="#!" onclick="showSection('dashboard')">
+                <span class="me-2"><i class="bi bi-speedometer2"></i></span>
+                <span>Dashboard</span>
+              </a>
             </li>
+          
             <hr class="dropdown-divider my-4">
+          
             <li>
-              <div class="text-muted fw-bold small text-uppercase px-2">
-              pages
-              </div>
+              <div class="text-muted fw-bold small text-uppercase px-2">Pages</div>
             </li>
-            <li >
-              <a class="nav-link px-3 sidebar-link" 
-              data-bs-toggle="collapse" 
-              href="#collapseExample" role="button"
-               aria-expanded="false" aria-controls="collapseExample">
-                <span class="me-2">
-                 <i class="bi bi-people-fill"></i>
-                </span>
+          
+            <!-- Students -->
+            <li>
+              <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                <span class="me-2"><i class="bi bi-people-fill"></i></span>
                 <span>Students</span>
-                <span class="right-icon ms-auto">
-                  <i class="bi bi-chevron-down"></i>
-                </span>
+                <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
               </a>
               <div class="collapse" id="collapseExample">
                 <div class="card card-body bg-dark">
-                
-                    <a href="#!" class="nav-link px-3" onclick="showSection('studentTableSection')">
-                        <span class="me-2">
-                            <i class="bi bi-people"></i>
-                        </span>
-                        <span>All Students</span>
-                    </a>
-
-                   
-                    <a href="#!" class="nav-link px-3" onclick="showSection('addStudent')">
-                        <span class="me-2">
-                            <i class="bi bi-plus"></i>
-                        </span>
-                        <span>Add Student</span>
-                    </a>
-
-                  
-
+                  <a href="#!" class="nav-link px-3" onclick="showSection('studentTableSection')">
+                    <span class="me-2"><i class="bi bi-people"></i></span>
+                    <span>All Students</span>
+                  </a>
+                  <a href="#!" class="nav-link px-3" onclick="showSection('addStudent')">
+                    <span class="me-2"><i class="bi bi-person-plus"></i></span>
+                    <span>Add Student</span>
+                  </a>
                 </div>
               </div>
-               </li>
-
-               <li >
-                <a class="nav-link px-3 sidebar-link" 
-                data-bs-toggle="collapse" 
-                href="#collapsTeachers" role="button"
-                 aria-expanded="false" aria-controls="collapsTeachers">
-                  <span class="me-2">
-                   <i class="bi bi-people-fill"></i>
-                  </span>
-                  <span>Staffs</span>
-                  <span class="right-icon ms-auto">
-                    <i class="bi bi-chevron-down"></i>
-                  </span>
-                </a>
-                <div class="collapse" id="collapsTeachers">
-                  <div class="card card-body bg-dark">
-                  
-                      <a href="#!" class="nav-link px-3" onclick="showSection('teachersViewTableSection')">
-                          <span class="me-2">
-                              <i class="bi bi-people"></i>
-                          </span>
-                          <span>All Staffs</span>
-                      </a>
-  
-                      <a href="#!" class="nav-link px-3" onclick="showSection('addTeacher')">
-                        <span class="me-2">
-                            <i class="bi bi-plus"></i>
-                        </span>
-                        <span>Add Staff</span>
-                    </a>
-  
-                  </div>
+            </li>
+          
+            <!-- Staffs -->
+            <li>
+              <a class="nav-link px-3 sidebar-link" data-bs-toggle="collapse" href="#collapsTeachers" role="button" aria-expanded="false" aria-controls="collapsTeachers">
+                <span class="me-2"><i class="bi bi-person-badge-fill"></i></span>
+                <span>Staffs</span>
+                <span class="right-icon ms-auto"><i class="bi bi-chevron-down"></i></span>
+              </a>
+              <div class="collapse" id="collapsTeachers">
+                <div class="card card-body bg-dark">
+                  <a href="#!" class="nav-link px-3" onclick="showSection('teachersViewTableSection')">
+                    <span class="me-2"><i class="bi bi-people"></i></span>
+                    <span>All Staffs</span>
+                  </a>
+                  <a href="#!" class="nav-link px-3" onclick="showSection('addTeacher')">
+                    <span class="me-2"><i class="bi bi-person-plus"></i></span>
+                    <span>Add Staff</span>
+                  </a>
                 </div>
-                 </li>
-
-                      <li class="nav-item">
-                        <a href="{%url 'newAdmin' %}" class="nav-link px-3">
-                          <span class="me-2">
-                            <i class="bi bi-person"></i>
-                          </span>
-                          <span>Register New Admin</span>
-                          
-                        </a>
-                      </li>
-                    
-
-                     <li class="nav-item">
-                      <a href="{% url 'news' %}" class="nav-link px-3">
-                        <span class="me-2">
-                          <i class="bi bi-newspaper"></i>
-                        </span>
-                        <span>Set School News</span>
-                        
-                      </a>
-                       </li>
-                       
-                      <li class="nav-item">
-                        <a href="{% url 'classRecord' %}" class="nav-link px-3">
-                          <span class="me-2">
-                            <i class="bi bi-newspaper"></i>
-                          </span>
-                          <span>Download Class Record</span>
-                          
-                        </a>
-                         </li>
-                         
-                         <li class="nav-item">
-                         <a href="{%url 'studentScore'%}" class="nav-link px-3">
-                           <span class="me-2">
-                           <i class="bi bi-people-fill"></i>
-                           </span>
-                           <span>Download Student Class Score</span>
-                           
-                         </a>
-                          </li>
-
-               <li class="nav-item">
-                <a href="{% url 'adminSetting' %}" class="nav-link px-3">
-                  <span class="me-2">
-                  <i class="bi bi-gear-fill"></i>
-                  </span>
-                  <span>Settings</span>
-                  
-                </a>
-               </li>
-
-               <li class="nav-item">
-                <a href="{% url 'academic_session_management' %}" class="nav-link px-3">
-                  <span class="me-2">
-                  <i class="bi bi-calendar-fill"></i>
-                  </span>
-                  <span>Academic Session</span>
-                </a>
-               </li>
-
-               <li class="nav-item">
-                <a href="{% url 'subject_list_create' %}" class="nav-link px-3">
-                  <span class="me-2">
-                  <i class="bi bi-book-fill"></i>
-                  </span>
-                  <span>Subjects</span>
-                </a>
-               </li>
-
-               <li class="nav-item">
-                <a href="{% url 'class_list' %}" class="nav-link px-3">
-                  <span class="me-2">
-                  <i class="bi bi-book-fill"></i>
-                  </span>
-                  <span>School Classes</span>
-                </a>
-               </li>
-
-               <li class="nav-item">
-                <a href="{% url 'site_settings' %}" class="nav-link px-3">
-                  <span class="me-2">
-                  <i class="bi bi-gear-fill"></i>
-                  </span>
-                  <span>Configure Site</span>
-                </a>
-               </li>
-
-               <li class="nav-item">
-                <a href="{% url 'manage_gallery' %}" class="nav-link px-3">
-                  <span class="me-2">
-                  <i class="bi bi-gear-fill"></i>
-                  </span>
-                  <span>School Gallery Manager</span>
-                </a>
-               </li>
+              </div>
+            </li>
+          
+            <!-- Register New Admin -->
+            <li class="nav-item">
+              <a href="{% url 'newAdmin' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-person-badge"></i></span>
+                <span>Register New Admin</span>
+              </a>
+            </li>
+          
+            <!-- Set School News -->
+            <li class="nav-item">
+              <a href="{% url 'news' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-newspaper"></i></span>
+                <span>Set School News</span>
+              </a>
+            </li>
+          
+            <!-- Download Class Record -->
+            <li class="nav-item">
+              <a href="{% url 'classRecord' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-download"></i></span>
+                <span>Download Class Record</span>
+              </a>
+            </li>
+          
+            <!-- Download Student Class Score -->
+            <li class="nav-item">
+              <a href="{% url 'studentScore' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-bar-chart-line"></i></span>
+                <span>Download Student Class Score</span>
+              </a>
+            </li>
+          
+            <!-- Settings -->
+            <li class="nav-item">
+              <a href="{% url 'adminSetting' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-gear-fill"></i></span>
+                <span>Settings</span>
+              </a>
+            </li>
+          
+            <!-- Academic Session -->
+            <li class="nav-item">
+              <a href="{% url 'academic_session_management' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-calendar-week"></i></span>
+                <span>Academic Session</span>
+              </a>
+            </li>
+          
+            <!-- Subjects -->
+            <li class="nav-item">
+              <a href="{% url 'subject_list_create' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-journal-bookmark"></i></span>
+                <span>Subjects</span>
+              </a>
+            </li>
+          
+            <!-- School Classes -->
+            <li class="nav-item">
+              <a href="{% url 'class_list' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-building"></i></span>
+                <span>School Classes</span>
+              </a>
+            </li>
+          
+            <!-- Configure Site -->
+            <li class="nav-item">
+              <a href="{% url 'site_settings' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-sliders"></i></span>
+                <span>Configure Site</span>
+              </a>
+            </li>
+          
+            <!-- School Gallery Manager -->
+            <li class="nav-item">
+              <a href="{% url 'manage_gallery' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-images"></i></span>
+                <span>School Gallery Manager</span>
+              </a>
+            </li>
+          
+            <!-- Notification Manager -->
+            <li class="nav-item">
+              <a href="{% url 'manage_notifications' %}" class="nav-link px-3">
+                <span class="me-2"><i class="bi bi-bell-fill"></i></span>
+                <span>Notification Manager</span>
+              </a>
+            </li>
           </ul>
+          
 
          </nav>
         </div>

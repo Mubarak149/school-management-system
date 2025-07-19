@@ -11,6 +11,7 @@ from .models import *
 # Create your views here.
 
 def main(request):
+    active_notification = Notification.objects.filter(active=True).order_by('-created_at').first()
     if request.method == 'POST':
         # Create a copy of POST data and convert the username to lowercase
         post_data = request.POST.copy()
@@ -51,7 +52,9 @@ def main(request):
         return redirect(reverse('main'))
     
     # If GET request, render the login page with the form
-    context = {'login_form': CustomAuthenticationForm()}
+    context = {'login_form': CustomAuthenticationForm(),
+               'active_notification':active_notification,
+               }
     return render(request, 'excellent-community/index.html', context)
 
 

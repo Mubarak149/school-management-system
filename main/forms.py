@@ -63,3 +63,9 @@ class GalleryForm(forms.ModelForm):
         }
 
 
+class NotificationForm(forms.ModelForm):
+    class Meta:
+        model = Notification
+        fields = ['title', 'message', 'active']
+
+

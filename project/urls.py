@@ -48,6 +48,9 @@ urlpatterns = [
     path('gallery/manage/', adminviews.manage_gallery, name='manage_gallery'),
     path('gallery/edit/<int:pk>/', adminviews.edit_gallery_image, name='edit_gallery_image'),
     path('gallery/delete/<int:pk>/', adminviews.delete_gallery_image, name='delete_gallery_image'),
+    path('notifications/', adminviews.manage_notifications, name='manage_notifications'),
+    path('notifications/edit/<int:pk>/', adminviews.edit_notification, name='edit_notification'),
+    path('notifications/delete/<int:pk>/', adminviews.delete_notification, name='delete_notification'),
     # end admin url
     
     # staff url 

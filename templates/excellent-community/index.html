@@ -3,6 +3,28 @@
 {% block title %}{{ site_settings.site_name }} Home{% endblock %}
 
 {% block content %}
+{% if active_notification %}
+  <!-- Notification Toast -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+    <div id="siteNotification" class="toast align-items-center text-bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body">
+          <strong>{{ active_notification.title }}</strong><br>
+          {{ active_notification.message }}
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function(){
+      var toastEl = document.getElementById('siteNotification');
+      var toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    });
+  </script>
+{% endif %}
 
 <!-- Hero Carousel -->
 <section class="hero">

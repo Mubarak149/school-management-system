@@ -1040,3 +1040,41 @@ def delete_gallery_image(request, pk):
     gallery_image.delete()
     messages.success(request, 'Image deleted successfully.')
     return redirect('manage_gallery')
+
+
+# List + Create
+def manage_notifications(request):
+    notifications = Notification.objects.all().order_by('-created_at')
+    form = NotificationForm()
+
+    if request.method == 'POST':
+        form = NotificationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Notification created successfully.')
+            return redirect('manage_notifications')
+        else:
+            messages.error(request, 'Please correct the error below.')
+
+    return render(request, 'school-admin/admin_dashboard/manage_notifications.html', {'notifications': notifications, 'form': form})
+
+# Update
+def edit_notification(request, pk):
+    notification = get_object_or_404(Notification, pk=pk)
+    if request.method == 'POST':
+        form = NotificationForm(request.POST, instance=notification)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Notification updated successfully.')
+            return redirect('manage_notifications')
+    else:
+        form = NotificationForm(instance=notification)
+    return render(request, 'school-admin/admin_dashboard/edit_notification.html', {'form': form, 'notification': notification})
+
+# Delete
+def delete_notification(request, pk):
+    notification = get_object_or_404(Notification, pk=pk)
+    notification.delete()
+    messages.success(request, 'Notification deleted successfully.')
+    return redirect('manage_notifications')
+
