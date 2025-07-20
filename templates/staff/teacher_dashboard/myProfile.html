@@ -27,42 +27,7 @@
 <body>
 
   <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed">
-        <div class="container-fluid">
-          <button class="navbar-toggler me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          
-
-          <a class="navbar-brand  fw-bold text-uppercase me-auto head-text" href="#">Excellent Community School Giwa</a>
-         
-           
-            {% if user.user_type == '2'%}
-            <li class="nav-item dropdown ms-auto" style="margin-right:40px;">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="bi bi-person-circle fs-5 fw-bold"></i>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-start" aria-labelledby="navbarDropdown">
-                    <li class="nav-item"><a class="dropdown-item" href="{%url 'staffHome' 1%}">dashboard</a></li>
-                  <li class="nav-item active"><a class="dropdown-item" href="{%url 'viewStaff' user.staff.id%}">my profile</a></li>
-                  <li class="nav-item"><a class="dropdown-item" href="{%url 'staffSetting' user.staff.id%}">settings</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li class="nav-item">
-                    {% if user.is_authenticated and user.user_type == '2' %}
-                        <a href="{% url 'logout' %}" class="btn btn-login">Logout</a>
-                    {% elif user.is_authenticated and user.user_type == '1' %}
-                        <a href="{% url 'logout' %}" class="btn btn-login">Delete</a>
-                    {% else %}
-                        <a class="btn btn-login" href="#loginModal" data-bs-toggle="modal">Login</a>
-                    {% endif %}
-                </li>
-                </ul>
-              </li>
-              {%endif%}
-          </div>
-        </div>
-      </nav>
-
+  {% include 'staff/teacher_dashboard/staff_navber.html' %}
   <!-- Navbar -->
 
       <div id="profile" class="card mb-3">
