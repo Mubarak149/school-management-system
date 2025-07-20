@@ -4,27 +4,20 @@
 
 {% block content %}
 {% if active_notification %}
-  <!-- Notification Toast -->
-  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
-    <div id="siteNotification" class="toast align-items-center text-bg-info border-0" role="alert" aria-live="assertive" aria-atomic="true">
-      <div class="d-flex">
-        <div class="toast-body">
-          <strong>{{ active_notification.title }}</strong><br>
-          {{ active_notification.message }}
+  <!-- Centered Notification -->
+  <div id="siteNotificationWrapper" class="position-fixed top-50 start-50 translate-middle" style="z-index: 9999; min-width: 300px;">
+    <div class="toast text-bg-info border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex flex-column p-3">
+        <div class="toast-body text-center">
+          <h5><strong>{{ active_notification.title }}</strong></h5><br>
+          <h4>{{ active_notification.message }}</h4>
         </div>
-        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <button type="button" class="btn btn-light mt-3" onclick="document.getElementById('siteNotificationWrapper').remove();">OK</button>
       </div>
     </div>
   </div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function(){
-      var toastEl = document.getElementById('siteNotification');
-      var toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    });
-  </script>
 {% endif %}
+
 
 <!-- Hero Carousel -->
 <section class="hero">
