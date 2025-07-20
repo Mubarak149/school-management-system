@@ -4,19 +4,25 @@
 
 {% block content %}
 {% if active_notification %}
-  <!-- Centered Notification -->
+  <!-- Centered Notification with Site Colors -->
   <div id="siteNotificationWrapper" class="position-fixed top-50 start-50 translate-middle" style="z-index: 9999; min-width: 300px;">
-    <div class="toast text-bg-info border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast border-0 show" role="alert" aria-live="assertive" aria-atomic="true"
+         style="background-color: {{ site_settings.primary_color }}; color: white;">
       <div class="d-flex flex-column p-3">
         <div class="toast-body text-center">
           <h5><strong>{{ active_notification.title }}</strong></h5><br>
           <h4>{{ active_notification.message }}</h4>
         </div>
-        <button type="button" class="btn btn-light mt-3" onclick="document.getElementById('siteNotificationWrapper').remove();">OK</button>
+        <button type="button" class="btn mt-3"
+                style="background-color: {{ site_settings.secondary_color }}; color: white;"
+                onclick="document.getElementById('siteNotificationWrapper').remove();">
+          OK
+        </button>
       </div>
     </div>
   </div>
 {% endif %}
+
 
 
 <!-- Hero Carousel -->
