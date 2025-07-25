@@ -76,8 +76,11 @@ def status(request):
     return render(request, 'excellent-community/Status.html', context)
 
 def gallery_view(request):
+    context = {'login_form': CustomAuthenticationForm(),
+               'images': images,
+               }
     images = GalleryImage.objects.all().order_by('-uploaded_at')
-    return render(request, 'excellent-community/gallery.html', {'images': images})
+    return render(request, 'excellent-community/gallery.html', context)
 
 def admission(request):
     context = {
@@ -95,12 +98,13 @@ def staff_hierarchy(request):
         '7',  # Bursar
         '24', # Head Master
     ]
-
+    
     administratives = Staff.objects.filter(work_title__in=admin_positions, still_work=True).order_by('work_title')
-
-    return render(request, 'excellent-community/administratives.html', {
-        'administratives': administratives
-    })
+    context = {
+            'login_form': CustomAuthenticationForm(),
+            'administratives': administratives,
+        }
+    return render(request, 'excellent-community/administratives.html', context)
 
 
 def search_student_academic_view(request):
@@ -129,6 +133,7 @@ def search_student_academic_view(request):
             fees = StudentSchoolFees.objects.filter(student=student).select_related('paid_session')
 
             context = {
+                'login_form': CustomAuthenticationForm(),
                 'student': student,
                 'admission': admission_obj,
                 'current_class': current_class,
