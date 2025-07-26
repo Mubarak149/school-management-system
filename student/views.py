@@ -25,10 +25,9 @@ class StudentProfile(LoginRequiredMixin, DetailView):
     
     def _get_admission_number(self, student):
         """Helper method to get student admission number based on class ID"""
-        current_session = AcademicSession.objects.get(is_current=True)
         try:
             # Retrieve the admission record for the student
-            admission_obj = Admission.objects.get(student=student, session=current_session)
+            admission_obj = Admission.objects.get(student=student)
             return admission_obj.admission_no
         except Admission.DoesNotExist:
             return 'No Admission No yet'
@@ -82,17 +81,13 @@ class StudentProfile(LoginRequiredMixin, DetailView):
         myclass = StudentClass.objects.get(student=student, current_class=True)
         # Get basic class info
         student_subjects, teachers = self._get_student_subjects_and_teachers(myclass)
-        current_session = AcademicSession.objects.get(is_current=True)
-        admissions = Admission.objects.filter(session=current_session, category=myclass.student_class.class_name, position_count=140)
-        print(admissions)
         # Get students in same class
         students_in_class = Student.objects.filter(
             student_active=True,
-            studentclass__student_class__class_name=myclass.student_class.class_name,
-            studentclass__student_class__class_no=myclass.student_class.class_no,
-            studentclass__student_class__class_type=myclass.student_class.class_type,
+            studentclass__student_class=myclass.student_class,
             studentclass__current_class=True
         )
+
 
         # Build context
         context.update({

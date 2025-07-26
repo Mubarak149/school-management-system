@@ -250,3 +250,11 @@ body {
     opacity: 0.9;
   }
   
+  .navbar .navbar-brand {
+    color: var(--accent-color, #ffc107);
+  }
+  
+  .navbar .dropdown-menu {
+    min-width: 180px;
+  }
+  

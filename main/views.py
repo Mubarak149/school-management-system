@@ -108,7 +108,7 @@ def staff_hierarchy(request):
 
 
 def search_student_academic_view(request):
-    context = {}
+    context = {'login_form': CustomAuthenticationForm(),}
     
     if request.method == 'POST':
         admission_number = request.POST.get('admission').strip()

@@ -171,7 +171,7 @@ class StudentGradesView(LoginRequiredMixin, DetailView):
                 'Date': f"{grade.record_date.day}/{grade.record_date.month}/{grade.record_date.year}",
                 'term': grade.get_term_display(),
                 'year': grade.year,
-                'class': f"{grade.the_class.get_class_name_display()} {grade.the_class.class_no}{grade.the_class.get_class_type_display()}",
+                'class': f"{grade.the_class.get_class_level_display()} {grade.the_class.class_name}{grade.the_class.class_type.upper()} ({grade.the_class.get_class_category_display()})",
                 'id': grade.id,
                 'score': grade.total_score,
             }

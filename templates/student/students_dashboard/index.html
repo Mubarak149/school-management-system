@@ -10,18 +10,63 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="{% static 'student-static/style.css' %}"> 
     <style>
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
+        :root {
+            --primary-color: {{ site_settings.primary_color|default:"#007bff" }};
+            --secondary-color: {{ site_settings.secondary_color|default:"#6c757d" }};
+            --accent-color: {{ site_settings.accent_color|default:"#f8f9fa" }};
         }
-        .nav-link {
-            cursor: pointer;
-            font-weight: 400;
-            text-transform: capitalize;
+    
+        body {
+            background-color: var(--accent-color);
         }
+    
+        .navbar {
+            background-color: var(--primary-color) !important;
+        }
+    
+        .navbar-brand, .nav-link, .btn {
+            color: var(--secondary-color) !important;
+        }
+    
+        .btn {
+            background-color: var(--primary-color);
+            border: none;
+        }
+    
+        .btn:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+    
+        .card {
+            border: 1px solid var(--primary-color);
+        }
+    
+        .card-title {
+            color: var(--primary-color);
+        }
+    
+        .active {
+            background-color: var(--primary-color) !important;
+            color: var(--secondary-color) !important;
+        }
+    
+        .nav-link:hover {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+        }
+    
+        .alert {
+            border-left: 5px solid var(--primary-color);
+        }
+    
+        #grades, #courses, #teachers, #performanceChartSection {
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+    
     </style>
+    
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
