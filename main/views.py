@@ -76,6 +76,7 @@ def status(request):
     return render(request, 'excellent-community/Status.html', context)
 
 def gallery_view(request):
+    images = GalleryImage.objects.all()
     context = {'login_form': CustomAuthenticationForm(),
                'images': images,
                }

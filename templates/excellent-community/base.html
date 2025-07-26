@@ -17,6 +17,21 @@
       --secondary-color: {{ site_settings.secondary_color|default:"#ffffff" }};
       --accent-color: {{ site_settings.accent_color|default:"#802020" }};
     }
+    .card-header-custom {
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      text-align: center;
+    }
+    .section-theme {
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      height: 60vh;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
   </style>
   
 </head>

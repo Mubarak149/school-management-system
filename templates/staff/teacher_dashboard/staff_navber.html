@@ -18,7 +18,7 @@
             <i class="bi bi-person-circle fs-5"></i>
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            {% if user.is_authenticated and user.user_type != 2 %}
+            {% if user.user_type != '2' %}
               <li><a href="{% url 'logout' %}" class="dropdown-item text-danger">Logout</a></li>
             {% else %}
               <li><a class="dropdown-item" href="{% url 'viewStaff' user.staff.id %}">My Profile</a></li>
