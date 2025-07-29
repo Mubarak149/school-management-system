@@ -15,6 +15,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("", include('main.urls')),
+    path("finance/", include('finance.urls')),
     # admin url
     path('school-admin', adminviews.home, name='adminHome'),
     path('student-dld', adminviews.students_view, name='classRecord'),

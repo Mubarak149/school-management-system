@@ -42,15 +42,6 @@ class Student(models.Model):
     
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-
-class StudentSchoolFees(models.Model):
-    student = models.ForeignKey("student.Student", on_delete=models.CASCADE)
-    price = models.IntegerField()
-    date_paid = models.DateField(auto_now_add=True)
-    date_updated = models.DateField(auto_now=True)
-    completed = models.BooleanField(default=False)
-    paid_session = models.ForeignKey(AcademicSession, on_delete=models.CASCADE)
-    
     
 class StudentAddress(models.Model):
     state = models.CharField(null=True, blank=True, max_length=50, default='Kaduna')

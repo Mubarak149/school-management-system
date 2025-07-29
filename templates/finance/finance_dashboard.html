@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Finance Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container py-4">
+  <h2 class="text-center mb-4">🎓 School Finance Dashboard</h2>
+
+  <!-- Class Filter -->
+  <form method="get" class="row g-3 mb-4">
+    <div class="col-md-6">
+      <select name="class" class="form-select">
+        <option value="">-- Filter by Class --</option>
+        {% for cls in classes %}
+          <option value="{{ cls.id }}" {% if selected_class == cls.id %}selected{% endif %}>
+            {{ cls.class_name }} ({{ cls.class_no }})
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <button class="btn btn-primary w-100">Apply Filter</button>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'finance_dashboard' %}" class="btn btn-outline-secondary w-100">Reset</a>
+    </div>
+  </form>
+
+  <!-- Summary Cards -->
+  <div class="row text-center mb-4">
+    <div class="col-md-3">
+      <div class="card bg-primary text-white shadow">
+        <div class="card-body">
+          <h5>Total Students</h5>
+          <h3>{{ total_students }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-success text-white shadow">
+        <div class="card-body">
+          <h5>Paid Students</h5>
+          <h3>{{ students_paid }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-danger text-white shadow">
+        <div class="card-body">
+          <h5>Unpaid Students</h5>
+          <h3>{{ students_unpaid }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-info text-white shadow">
+        <div class="card-body">
+          <h5>Total Collected</h5>
+          <h3>₦{{ total_collected|intcomma }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Unpaid Students Table -->
+  <div class="card shadow">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0">Students Who Haven't Paid</h5>
+    </div>
+    <div class="card-body p-0">
+      {% if unpaid_students %}
+        <div class="table-responsive">
+          <table class="table table-striped mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>Full Name</th>
+                <th>Admission No</th>
+                <th>Class</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for student in unpaid_students %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ student.user.get_full_name }}</td>
+                  <td>{{ student.admission_no }}</td>
+                  <td>{{ student.student_class }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="p-3">All students have paid.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

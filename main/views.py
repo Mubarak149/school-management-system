@@ -6,7 +6,7 @@ from .forms import CustomAuthenticationForm
 from django.contrib import messages
 from staff.models import Staff
 from .models import Admission
-from student.models import StudentsGrade, StudentPromotionRecord, StudentSchoolFees
+from student.models import StudentsGrade, StudentPromotionRecord
 from .models import *
 # Create your views here.
 
