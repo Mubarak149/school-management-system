@@ -79,15 +79,15 @@ class StudentProfile(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         student = self.get_object()
         myclass = StudentClass.objects.get(student=student, current_class=True)
+        the_class_object = myclass.student_class
         # Get basic class info
         student_subjects, teachers = self._get_student_subjects_and_teachers(myclass)
         # Get students in same class
         students_in_class = Student.objects.filter(
             student_active=True,
-            studentclass__student_class=myclass.student_class,
-            studentclass__current_class=True
+            myclasses__student_class=myclass.student_class,
+            myclasses__current_class=True
         )
-
 
         # Build context
         context.update({

@@ -1,34 +1,57 @@
-from django.shortcuts import render
-from django.db.models import Sum
-from .models import StudentSchoolFees
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse, HttpResponse
+from django.template.loader import render_to_string
+from .forms import InvoiceForm, PaymentForm, InvoiceItemForm, FeeCategoryForm
+from .models import SchoolInvoice, InvoiceItem, Payment, FeeStructure, FeeCategory
 from student.models import Student
-from school_admin.models import SchoolClass
+from main.models import AcademicSession
+
 
 def finance_dashboard(request):
-    class_filter = request.GET.get("class")
-    all_classes = SchoolClass.objects.all()
-    all_students = Student.objects.all()
-
-    if class_filter:
-        all_students = all_students.filter(student_class__id=class_filter)
-
-    # Get students who paid
-    paid_fees = StudentSchoolFees.objects.filter(completed=True)
-    paid_student_ids = paid_fees.values_list("student_id", flat=True).distinct()
-
-    # Unpaid students
-    unpaid_students = all_students.exclude(id__in=paid_student_ids)
-
-    # Total amount collected
-    total_collected = paid_fees.aggregate(Sum("price"))["price__sum"] or 0
-
+    # 1. Get all students and invoices to display in dashboard
+    students = Student.objects.all() 
+    invoices = SchoolInvoice.objects.all()
+    payments = Payment.objects.all()
+    category_form = FeeCategoryForm()
+    category = FeeCategory.objects.all()
+    payment_form = PaymentForm()
+    invoice_form = InvoiceForm(request.POST)
+   
     context = {
-        "classes": all_classes,
-        "selected_class": int(class_filter) if class_filter else None,
-        "total_students": all_students.count(),
-        "students_paid": paid_student_ids.count(),
-        "students_unpaid": unpaid_students.count(),
-        "unpaid_students": unpaid_students,
-        "total_collected": total_collected,
+        "students": students,
+        "invoices": invoices,
+        "payments": payments,
+        "invoice_form": invoice_form,
+        "payment_form": payment_form,
+        "categories":category,
+        "category_form": category_form,
     }
     return render(request, "finance/finance_dashboard.html", context)
+
+def create_category(request):
+    if request.method == "POST":
+        form = FeeCategoryForm(request.POST)
+        if form.is_valid():
+            category = form.save()
+            html = render_to_string("finance/partials/category_row.html", {"cat": category})
+            return HttpResponse(html)  # HTMX swaps this into table
+        return JsonResponse({"error": "Invalid data"}, status=400)
+
+def edit_category(request, pk):
+    category = get_object_or_404(FeeCategory, pk=pk)
+    if request.method == "GET":
+        form = FeeCategoryForm(instance=category)
+        return render(request, "finance/partials/category_edit_form.html", {"form": form, "cat": category})
+
+    elif request.method == "POST":
+        form = FeeCategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            category = form.save()
+            html = render_to_string("finance/partials/category_row.html", {"cat": category})
+            return HttpResponse(html)
+        return JsonResponse({"error": "Invalid data"}, status=400)
+
+def delete_category(request, pk):
+    category = get_object_or_404(FeeCategory, pk=pk)
+    category.delete()
+    return HttpResponse("")  # removes row

@@ -1,0 +1,23 @@
+<tr id="category-{{ cat.id }}">
+    <td>—</td>
+    <td class="fw-bold">{{ cat.name }}</td>
+    <td>{{ cat.description|default:"—" }}</td>
+    <td>
+      <button 
+        class="btn btn-sm btn-warning"
+        hx-get="{% url 'edit_category' cat.id %}"
+        hx-target="#category-{{ cat.id }}"
+        hx-swap="outerHTML">
+        <i class="bi bi-pencil-square"></i>
+      </button>
+      <button 
+        class="btn btn-sm btn-danger"
+        hx-delete="{% url 'delete_category' cat.id %}"
+        hx-target="#category-{{ cat.id }}"
+        hx-swap="outerHTML"
+        hx-confirm="Are you sure?">
+        <i class="bi bi-trash"></i>
+      </button>
+    </td>
+  </tr>
+  

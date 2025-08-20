@@ -1,9 +1,13 @@
-
 function showSection(section) {
-    ['dashboard','studentTableSection',
-    'addStudent','teachersViewTableSection','addTeacher'].forEach(sec => {
-        document.getElementById(sec).style.display = 'none';
+    ['dashboard', 'studentTableSection', 'addStudent', 'createClassFeeSection'].forEach(sec => {
+      const secElement = document.getElementById(sec);
+      if (secElement) {
+        secElement.style.display = 'none';
+      }
     });
-    
-    document.getElementById(section).style.display = 'block';
-}
+  
+    const selectedSection = document.getElementById(section);
+    if (selectedSection) {
+      selectedSection.style.display = 'block';
+    }
+  }

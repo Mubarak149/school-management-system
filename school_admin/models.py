@@ -66,14 +66,15 @@ class SchoolClass(models.Model):
     )
 
     def __str__(self):
-        return f"{self.get_class_level_display()} {self.class_name}{self.class_type.upper()} ({self.class_category.capitalize()})"
-
+        category = f" ({self.class_category.capitalize()})" if self.class_category.lower() != 'none' else ""
+        return f"{self.get_class_level_display()} {self.class_name}{self.class_type.upper()}{category}"
+        
     class Meta:
         ordering = ['class_level', 'class_name', 'class_type']
         verbose_name = "School Class"
         verbose_name_plural = "School Classes"
 
-    
+ 
 class Subjects(models.Model):
     name = models.CharField(max_length=50)
     

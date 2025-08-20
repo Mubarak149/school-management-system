@@ -131,7 +131,6 @@ def search_student_academic_view(request):
             current_class = student.get_current_class()
             grades = StudentsGrade.objects.filter(student=student).select_related('subject', 'the_class', 'grade_session')
             promotions = StudentPromotionRecord.objects.filter(student=student).select_related('promoted_class', 'promotion_session')
-            fees = StudentSchoolFees.objects.filter(student=student).select_related('paid_session')
 
             context = {
                 'login_form': CustomAuthenticationForm(),
@@ -140,7 +139,6 @@ def search_student_academic_view(request):
                 'current_class': current_class,
                 'grades': grades,
                 'promotions': promotions,
-                'fees': fees,
                 'admission_number': admission_number
             }
         except Exception as e:

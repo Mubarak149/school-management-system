@@ -69,15 +69,15 @@ class StudentsGrade(models.Model):
         ('2', "Second Term"),
         ('3', "Third Term")
     )
-    student = models.ForeignKey("student.Student", on_delete=models.CASCADE)
-    subject = models.ForeignKey("school_admin.Subjects", on_delete=models.CASCADE)
+    student = models.ForeignKey("student.Student", on_delete=models.CASCADE, related_name='mygrades')
+    subject = models.ForeignKey("school_admin.Subjects", on_delete=models.CASCADE, related_name='student_grade')
     total_score = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    the_class = models.ForeignKey("school_admin.SchoolClass", on_delete=models.CASCADE)
+    the_class = models.ForeignKey("school_admin.SchoolClass", on_delete=models.CASCADE, related_name='grades')
     record_date = models.DateField(default=timezone.now)
     term = models.CharField(choices=TERM, default=1, max_length=50)
-    grade_session = models.ForeignKey(AcademicSession, on_delete=models.CASCADE)
+    grade_session = models.ForeignKey(AcademicSession, on_delete=models.CASCADE, related_name='session_grades')
     year = models.IntegerField(
         validators=[MinValueValidator(1900), MaxValueValidator(datetime.date.today().year)],
         default=datetime.date.today().year
@@ -174,10 +174,20 @@ class StudentClassManager(models.Manager):
                 session_attend_class=session,
                 current_class=True
             )
+    def get_current_classes(self):
+        """Get all current class assignments"""
+        return self.get_queryset().filter(current_class=True)
+    
+    def get_student_current_class(self, student):
+        """Get a student's current class"""
+        return self.get_queryset().filter(
+            student=student,
+            current_class=True
+        ).select_related('student_class').first()
 
 class StudentClass(models.Model):  
-    student = models.ForeignKey("student.Student", on_delete=models.CASCADE)
-    student_class = models.ForeignKey("school_admin.SchoolClass", on_delete=models.CASCADE)
+    student = models.ForeignKey("student.Student", on_delete=models.CASCADE, related_name='myclasses')
+    student_class = models.ForeignKey("school_admin.SchoolClass", on_delete=models.CASCADE, related_name='students')
     current_class = models.BooleanField(default=True)
     session_attend_class = models.ForeignKey(AcademicSession, on_delete=models.CASCADE)
     date_attend_class = models.DateField(auto_now_add=True)

@@ -1,0 +1,23 @@
+<tr id="category-{{ cat.id }}">
+    <td colspan="4">
+      <form 
+        hx-post="{% url 'edit_category' cat.id %}" 
+        hx-target="#category-{{ cat.id }}" 
+        hx-swap="outerHTML" 
+        class="row g-2">
+        {% csrf_token %}
+        <div class="col-md-4">{{ form.name }}</div>
+        <div class="col-md-4">{{ form.description }}</div>
+        <div class="col-md-4 d-flex gap-2">
+          <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check"></i></button>
+          <button type="button" class="btn btn-sm btn-secondary" 
+                  hx-get="{% url 'category_row' cat.id %}" 
+                  hx-target="#category-{{ cat.id }}" 
+                  hx-swap="outerHTML">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+      </form>
+    </td>
+  </tr>
+  

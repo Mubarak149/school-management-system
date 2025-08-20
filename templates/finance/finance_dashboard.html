@@ -1,108 +1,383 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Finance Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<!-- Load HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      height: 100vh;
+      width: 250px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: linear-gradient(180deg, #2c3e50, #34495e);
+      padding-top: 20px;
+      z-index: 1000;
+      transition: all 0.3s;
+    }
+
+    .sidebar a {
+      color: #bdc3c7;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      font-weight: 500;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      background-color: #1abc9c;
+      color: #fff;
+      border-radius: 6px;
+    }
+
+    .content {
+      margin-left: 250px;
+      padding: 25px;
+      transition: all 0.3s;
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .sidebar { width: 0; overflow: hidden; }
+      .content { margin-left: 0; }
+      .sidebar.show { width: 250px; }
+    }
+
+    .toggle-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background: #1abc9c;
+      border: none;
+      color: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      z-index: 1100;
+    }
+
+    @media (min-width: 769px) {
+      .toggle-btn { display: none; }
+    }
+
+    /* Card improvements */
+    .dashboard-cards .card {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+
+    .dashboard-cards .card:hover {
+      transform: translateY(-4px);
+    }
+
+    /* Class cards */
+    .class-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      transition: transform 0.2s;
+    }
+
+    .class-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .hidden { display: none !important; }
+  </style>
 </head>
-<body class="bg-light">
+<body>
+<!-- Sidebar toggle -->
+<button class="toggle-btn" id="toggle-btn">
+  <i class="bi bi-list fs-4"></i>
+</button>
 
-<div class="container py-4">
-  <h2 class="text-center mb-4">🎓 School Finance Dashboard</h2>
-
-  <!-- Class Filter -->
-  <form method="get" class="row g-3 mb-4">
-    <div class="col-md-6">
-      <select name="class" class="form-select">
-        <option value="">-- Filter by Class --</option>
-        {% for cls in classes %}
-          <option value="{{ cls.id }}" {% if selected_class == cls.id %}selected{% endif %}>
-            {{ cls.class_name }} ({{ cls.class_no }})
-          </option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-3">
-      <button class="btn btn-primary w-100">Apply Filter</button>
-    </div>
-    <div class="col-md-3">
-      <a href="{% url 'finance_dashboard' %}" class="btn btn-outline-secondary w-100">Reset</a>
-    </div>
-  </form>
-
-  <!-- Summary Cards -->
-  <div class="row text-center mb-4">
-    <div class="col-md-3">
-      <div class="card bg-primary text-white shadow">
-        <div class="card-body">
-          <h5>Total Students</h5>
-          <h3>{{ total_students }}</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card bg-success text-white shadow">
-        <div class="card-body">
-          <h5>Paid Students</h5>
-          <h3>{{ students_paid }}</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card bg-danger text-white shadow">
-        <div class="card-body">
-          <h5>Unpaid Students</h5>
-          <h3>{{ students_unpaid }}</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card bg-info text-white shadow">
-        <div class="card-body">
-          <h5>Total Collected</h5>
-          <h3>₦{{ total_collected|intcomma }}</h3>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Unpaid Students Table -->
-  <div class="card shadow">
-    <div class="card-header bg-warning text-dark">
-      <h5 class="mb-0">Students Who Haven't Paid</h5>
-    </div>
-    <div class="card-body p-0">
-      {% if unpaid_students %}
-        <div class="table-responsive">
-          <table class="table table-striped mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>#</th>
-                <th>Full Name</th>
-                <th>Admission No</th>
-                <th>Class</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for student in unpaid_students %}
-                <tr>
-                  <td>{{ forloop.counter }}</td>
-                  <td>{{ student.user.get_full_name }}</td>
-                  <td>{{ student.admission_no }}</td>
-                  <td>{{ student.student_class }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% else %}
-        <p class="p-3">All students have paid.</p>
-      {% endif %}
-    </div>
-  </div>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <a href="#dashboard" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+  <a href="#invoices"><i class="bi bi-cash-coin"></i> Invoices & Payments</a>
+  <a href="#fee-categories"><i class="bi bi-tags"></i> Fee Categories</a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Content -->
+<div class="content">
+  <h1 class="fw-bold mb-4">Finance Dashboard</h1>
+
+  <!-- Dashboard -->
+<div id="dashboard">
+  <div class="row dashboard-cards mb-5 g-4">
+    <div class="col-md-3 col-6">
+      <div class="card bg-primary text-white text-center p-3">
+        <h6>Total Students</h6>
+        <h3>{{ total_students }}</h3>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card bg-danger text-white text-center p-3">
+        <h6>Unpaid Students</h6>
+        <h3>{{ students_unpaid }}</h3>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card bg-success text-white text-center p-3">
+        <h6>Paid Students</h6>
+        <h3>{{ students_paid }}</h3>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="card bg-info text-white text-center p-3">
+        <h6>Total Collected</h6>
+        <h3>₦{{ total_collected|floatformat:2 }}</h3>
+      </div>
+    </div>
+  </div>
+
+    <!-- Per-Class Breakdown -->
+    <div class="bg-white p-4 rounded shadow-sm">
+      <h4 class="mb-3">Class Finance Breakdown</h4>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Class</th>
+              <th>Total Students</th>
+              <th>Paid</th>
+              <th>Unpaid</th>
+              <th>Total Collected</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for stat in class_stats %}
+            <tr>
+              <td>{{ stat.class_name }}</td>
+              <td>{{ stat.total_students }}</td>
+              <td class="text-success fw-bold">{{ stat.paid }}</td>
+              <td class="text-danger fw-bold">{{ stat.unpaid }}</td>
+              <td>₦{{ stat.collected|floatformat:2 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">No class data available</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+
+  <!-- Fee Categories Section -->
+  <div id="fee-categories" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
+    <h2 class="mb-4"><i class="bi bi-tags"></i> Fee Categories</h2>
+          <!-- Create Category Form -->
+      <form 
+      hx-post="{% url 'create_category' %}" 
+      hx-target="#categories-table-body" 
+      hx-swap="afterbegin"
+      hx-on="htmx:responseError: alert(event.detail.xhr.responseText)"
+      class="row g-3 mb-4">
+      {% csrf_token %}
+      <div class="col-md-6">
+        <label for="id_name" class="form-label fw-bold">Category Name</label>
+        {{ category_form.name }}
+      </div>
+      <div class="col-md-6">
+        <label for="id_description" class="form-label fw-bold">Description</label>
+        {{ category_form.description }}
+      </div>
+      <div class="col-12">
+        <button type="submit" class="btn btn-success w-100">
+          <i class="bi bi-plus-circle"></i> Add Category
+        </button>
+      </div>
+      </form>
+
+      <!-- Categories Table -->
+      <div class="table-responsive">
+      <table class="table table-hover align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="categories-table-body">
+          {% for cat in categories %}
+          <tr id="category-{{ cat.id }}">
+            <td>{{ forloop.counter }}</td>
+            <td class="fw-bold">{{ cat.name }}</td>
+            <td>{{ cat.description|default:"—" }}</td>
+            <td>
+              <!-- Edit Button -->
+              <button 
+                class="btn btn-sm btn-warning"
+                hx-get="{% url 'edit_category' cat.id %}"
+                hx-target="#category-{{ cat.id }}"
+                hx-swap="outerHTML">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+
+              <!-- Delete Button -->
+              <button 
+                class="btn btn-sm btn-danger"
+                hx-delete="{% url 'delete_category' cat.id %}"
+                hx-target="#category-{{ cat.id }}"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to delete this category?">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center">No categories added yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+
+  </div>
+
+  
+    <!-- Invoice Management Section -->
+    <div id="invoices" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
+      <h2 class="mb-4">Invoices</h2>
+
+      <!-- Invoice Table -->
+      <div class="table-responsive mb-4">
+        <table class="table table-bordered align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Invoice #</th>
+              <th>Student</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Due Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for inv in invoices %}
+            <tr>
+              <td>{{ inv.invoice_number }}</td>
+              <td>{{ inv.student.user.username }}</td>
+              <td>₦{{ inv.total_amount|floatformat:2 }}</td>
+              <td>
+                {% if inv.status == "PAID" %}
+                  <span class="badge bg-success">Paid</span>
+                {% elif inv.status == "PARTIALLY_PAID" %}
+                  <span class="badge bg-warning text-dark">Partially Paid</span>
+                {% else %}
+                  <span class="badge bg-danger">Unpaid</span>
+                {% endif %}
+              </td>
+              <td>{{ inv.due_date }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">No invoices yet</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Create Payment -->
+      <h3 class="mb-3">Record Payment</h3>
+      <form method="POST" action="{% url 'finance_dashboard' %}" class="row g-3">
+        {% csrf_token %}
+        {{ payment_form.as_p }}
+        <div class="col-12">
+          <button type="submit" name="create_payment" class="btn btn-primary w-100">Save Payment</button>
+        </div>
+      </form>
+
+      <!-- Payments Table -->
+      <h3 class="mt-5 mb-3">Payments</h3>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Invoice</th>
+              <th>Student</th>
+              <th>Amount Paid</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in payments %}
+            <tr>
+              <td>{{ p.invoice.invoice_number }}</td>
+              <td>{{ p.invoice.student.user.username }}</td>
+              <td>₦{{ p.amount|floatformat:2 }}</td>
+              <td>{{ p.date_paid }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center">No payments recorded</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Sidebar navigation
+  document.querySelectorAll('.sidebar a').forEach(link => {
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+      link.classList.add('active');
+
+      document.querySelectorAll('.content > div').forEach(div => div.style.display = 'none');
+      document.getElementById(link.getAttribute('href').replace('#', '')).style.display = 'block';
+    });
+  });
+
+  // Mobile toggle
+  document.getElementById('toggle-btn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.toggle('show');
+  });
+
+    // Toggle fields
+    document.getElementById("target-type").addEventListener("change", function() {
+      document.querySelectorAll(".target-field").forEach(el => el.style.display = "none");
+      if (this.value) {
+        document.getElementById(this.value + "-field").style.display = "block";
+      }
+    });
+  
+    // Enable Select2 (searchable dropdown)
+    $(document).ready(function() {
+      $('.select2').select2({
+        width: '100%',
+        placeholder: 'Search and select...'
+      });
+    });
+
+</script>
 </body>
 </html>
