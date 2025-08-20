@@ -1,5 +1,5 @@
 <tr id="category-{{ cat.id }}">
-    <td>—</td>
+    <td>{{ cat.id }}</td>
     <td class="fw-bold">{{ cat.name }}</td>
     <td>{{ cat.description|default:"—" }}</td>
     <td>
@@ -10,14 +10,16 @@
         hx-swap="outerHTML">
         <i class="bi bi-pencil-square"></i>
       </button>
-      <button 
-        class="btn btn-sm btn-danger"
-        hx-delete="{% url 'delete_category' cat.id %}"
-        hx-target="#category-{{ cat.id }}"
-        hx-swap="outerHTML"
+      <form 
+        hx-post="{% url 'delete_category' cat.id %}" 
+        hx-target="#category-{{ cat.id }}" 
+        hx-swap="outerHTML" 
         hx-confirm="Are you sure?">
-        <i class="bi bi-trash"></i>
-      </button>
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-danger">
+          <i class="bi bi-trash"></i>
+        </button>
+      </form>
     </td>
   </tr>
   

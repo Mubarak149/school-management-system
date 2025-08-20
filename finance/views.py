@@ -28,6 +28,11 @@ def finance_dashboard(request):
     }
     return render(request, "finance/finance_dashboard.html", context)
 
+def category_row(request, pk):
+    category = get_object_or_404(FeeCategory, pk=pk)
+    html = render_to_string("finance/partials/category_row.html", {"cat": category})
+    return HttpResponse(html)
+
 def create_category(request):
     if request.method == "POST":
         form = FeeCategoryForm(request.POST)

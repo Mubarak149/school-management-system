@@ -213,7 +213,7 @@
       <table class="table table-hover align-middle">
         <thead class="table-dark">
           <tr>
-            <th>#</th>
+            <th>IDs</th>
             <th>Name</th>
             <th>Description</th>
             <th>Actions</th>
@@ -222,7 +222,7 @@
         <tbody id="categories-table-body">
           {% for cat in categories %}
           <tr id="category-{{ cat.id }}">
-            <td>{{ forloop.counter }}</td>
+            <td>{{ cat.id }}</td>
             <td class="fw-bold">{{ cat.name }}</td>
             <td>{{ cat.description|default:"—" }}</td>
             <td>
@@ -236,14 +236,16 @@
               </button>
 
               <!-- Delete Button -->
-              <button 
-                class="btn btn-sm btn-danger"
-                hx-delete="{% url 'delete_category' cat.id %}"
-                hx-target="#category-{{ cat.id }}"
-                hx-swap="outerHTML"
-                hx-confirm="Are you sure you want to delete this category?">
-                <i class="bi bi-trash"></i>
-              </button>
+              <form 
+                hx-post="{% url 'delete_category' cat.id %}" 
+                hx-target="#category-{{ cat.id }}" 
+                hx-swap="outerHTML" 
+                hx-confirm="Are you sure?">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
             </td>
           </tr>
           {% empty %}
