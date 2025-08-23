@@ -1,0 +1,44 @@
+<tr id="fs-{{ fs.id }}">
+  <td>{{ fs.school_class }}</td>
+  <td>{{ fs.session.name }}</td>
+  <td>{{ fs.get_term_display }}</td>
+  <td>{{ fs.category.name }}</td>
+  <td>₦{{ fs.amount|floatformat:2 }}</td>
+  <td class="d-flex gap-2">
+    <!-- Edit Button -->
+    <button 
+      class="btn btn-sm btn-warning"
+      hx-get="{% url 'edit_fee_structure' fs.id %}"
+      hx-target="#fs-{{ fs.id }}"
+      hx-swap="outerHTML">
+      <i class="bi bi-pencil-square"></i>
+    </button>
+  
+    <!-- Delete Button -->
+    <form 
+      hx-post="{% url 'delete_fee_structure' fs.id %}" 
+      hx-target="#fs-{{ fs.id }}" 
+      hx-swap="outerHTML" 
+      hx-confirm="Are you sure?"
+      class="m-0">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-danger">
+        <i class="bi bi-trash"></i>
+      </button>
+    </form>  
+  
+    <!-- Send Invoice Button -->
+    <form 
+      hx-post="{% url 'send_invoice' fs.id %}"
+      hx-target="#fs-{{ fs.id }}"
+      hx-swap="afterend"
+      hx-on="htmx:afterRequest: alert(event.detail.xhr.responseText)"
+      class="d-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-success">
+        <i class="bi bi-envelope"></i> Send Invoice
+      </button>
+    </form>
+  </td>  
+  
+</tr>

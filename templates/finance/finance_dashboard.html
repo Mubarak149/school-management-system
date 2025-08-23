@@ -113,6 +113,7 @@
   <a href="#dashboard" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
   <a href="#invoices"><i class="bi bi-cash-coin"></i> Invoices & Payments</a>
   <a href="#fee-categories"><i class="bi bi-tags"></i> Fee Categories</a>
+  <a href="#fee-structures"><i class="bi bi-cash-stack"></i> Fee Structure</a>
 </div>
 
 <!-- Content -->
@@ -258,6 +259,78 @@
       </div>
 
   </div>
+
+  <!-- Fee Structures Section -->
+    <div id="fee-structures" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
+      <h2 class="mb-4"><i class="bi bi-table"></i> Fee Structures</h2>
+
+      <!-- Create Fee Structure Form -->
+      <form 
+        hx-post="{% url 'create_fee_structure' %}" 
+        hx-target="#fee-structures-body" 
+        hx-swap="afterbegin"
+        hx-on="htmx:responseError: alert(event.detail.xhr.responseText)"
+        class="row g-3 mb-4">
+        {% csrf_token %}
+
+        <div class="col-md-6">
+          <label for="id_school_class" class="form-label fw-bold">Class</label>
+          {{ fee_structure_form.school_class }}
+        </div>
+
+        <div class="col-md-6">
+          <label for="id_session" class="form-label fw-bold">Session</label>
+          {{ fee_structure_form.session }}
+        </div>
+
+        <div class="col-md-6">
+          <label for="id_term" class="form-label fw-bold">Term</label>
+          {{ fee_structure_form.term }}
+        </div>
+
+        <div class="col-md-6">
+          <label for="id_category" class="form-label fw-bold">Category</label>
+          {{ fee_structure_form.category }}
+        </div>
+
+        <div class="col-md-6">
+          <label for="id_amount" class="form-label fw-bold">Amount</label>
+          {{ fee_structure_form.amount }}
+        </div>
+
+        <div class="col-12">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-plus-circle"></i> Add Fee Structure
+          </button>
+        </div>
+      </form>
+
+
+      <!-- Structures Table -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-dark">
+            <tr>
+              <th>Class</th>
+              <th>Session</th>
+              <th>Term</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="fee-structures-body">
+            {% for fs in structures %}
+              {% include "finance/partials/fee_structure_row.html" %}
+            {% empty %}
+            <tr>
+              <td colspan="6" class="text-center">No fee structures yet.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
 
   
     <!-- Invoice Management Section -->

@@ -1,5 +1,5 @@
 from django import forms
-from .models import SchoolInvoice, InvoiceItem, Payment, FeeCategory
+from .models import *
 
 
 class FeeCategoryForm(forms.ModelForm):
@@ -9,6 +9,19 @@ class FeeCategoryForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter category name'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Enter description'}),
+        }
+
+
+class FeeStructureForm(forms.ModelForm):
+    class Meta:
+        model = FeeStructure
+        fields = ["school_class", "session", "term", "category", "amount"]
+        widgets = {
+            "school_class": forms.Select(attrs={"class": "form-select"}),
+            "session": forms.Select(attrs={"class": "form-select"}),
+            "term": forms.Select(attrs={"class": "form-select"}),
+            "category": forms.Select(attrs={"class": "form-select"}),
+            "amount": forms.NumberInput(attrs={"class": "form-control", "placeholder": "₦"}),
         }
 
 

@@ -1,0 +1,26 @@
+<tr id="fs-{{ fs.id }}">
+    <td colspan="6">
+      <form 
+        hx-post="{% url 'edit_fee_structure' fs.id %}" 
+        hx-target="#fs-{{ fs.id }}" 
+        hx-swap="outerHTML"
+        class="row g-2 align-items-center">
+        {% csrf_token %}
+        <div class="col">{{ form.school_class }}</div>
+        <div class="col">{{ form.session }}</div>
+        <div class="col">{{ form.term }}</div>
+        <div class="col">{{ form.category }}</div>
+        <div class="col">{{ form.amount }}</div>
+        <div class="col-auto">
+          <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-check"></i></button>
+          <button 
+            type="button" 
+            class="btn btn-secondary btn-sm"
+            hx-get="{% url 'edit_fee_structure' fs.id %}"
+            hx-target="#fs-{{ fs.id }}"
+            hx-swap="outerHTML">Cancel</button>
+        </div>
+      </form>
+    </td>
+  </tr>
+  
