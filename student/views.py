@@ -8,12 +8,11 @@ from django.shortcuts import render, redirect,  get_object_or_404
 from django.urls import reverse
 from django.views.generic import DetailView, View
 from main.models import *
+from finance.models import SchoolInvoice
 from .models import Student, StudentClass, StudentPromotionRecord
 from staff.models import Teachers
 from .forms import *
-from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import DatabaseError
+
 
 # Create your views here.
 
@@ -88,6 +87,16 @@ class StudentProfile(LoginRequiredMixin, DetailView):
             myclasses__student_class=myclass.student_class,
             myclasses__current_class=True
         )
+        
+        # Fetch all invoices with items for the student
+        invoices = SchoolInvoice.objects.filter(student=student).prefetch_related("items")
+
+        # Fetch latest unpaid invoice (using status, not paid field)
+        latest_unpaid_invoice = (
+            invoices.filter(status='unpaid')
+            .order_by("-issue_date")  # Use issue_date instead of date_created
+            .first()
+        )
 
         # Build context
         context.update({
@@ -97,6 +106,8 @@ class StudentProfile(LoginRequiredMixin, DetailView):
             'date_attend': myclass.date_attend_class,
             'admission_no': self._get_admission_number(student),
             'grades_json': self._get_student_grades(student, myclass),
+            'invoices': invoices,
+            "latest_unpaid_invoice": latest_unpaid_invoice,
         })
         
         # Add position data

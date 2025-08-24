@@ -92,6 +92,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="#!" onclick="setActive(this), showSection('performanceChartSection')">Performance</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#!" onclick="setActive(this), showSection('invoices')">Invoices</a>
+                    </li>
                     
                 </ul>
                     <button class="btn btn-sm"><a href="{%url 'main'%}" class="nav-link">Back to main site</a></button>
@@ -110,33 +113,64 @@
         <!-- Profile Section -->
         <div id="profile" class="card mb-3">
             <div class="row g-0">
+                <!-- Student Avatar -->
                 <div class="col-md-4 ms-auto p-2">
-                    <img src="{{ student.pic.url}}" class="img-fluid img-thumbnail avatar" alt="Student Avatar">
+                    <img src="{{ student.pic.url }}" class="img-fluid img-thumbnail avatar" alt="Student Avatar">
                 </div>
+        
+                <!-- Student Info -->
                 <div class="col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title">{{student.user.first_name}} {{student.user.last_name}}</h5>
-                        <p class="card-text">Email: {{student.user.email}}</p>
-                        <p class="card-text">My class: {{myclass.get_class_name_display}} {{myclass.class_no}}{{myclass.get_class_type_display}}</p>
-                        <p class="card-text">Admission No: <small class="text-muted"> {{admission_no}} </small></p>
-                        {%if student.student_active%}
+                        <h5 class="card-title">
+                            {{ student.user.first_name }} {{ student.user.last_name }}
+                        </h5>
+                        <p class="card-text">Email: {{ student.user.email }}</p>
+                        <p class="card-text">
+                            My class: {{ myclass.get_class_name_display }} {{ myclass.class_no }}{{ myclass.get_class_type_display }}
+                        </p>
+                        <p class="card-text">
+                            Admission No: <small class="text-muted">{{ admission_no }}</small>
+                        </p>
+        
+                        <!-- Active / Inactive -->
+                        {% if student.student_active %}
                             <button class="btn btn-success" id="activeBtn">Active</button>
-                        {%else%}
+                        {% else %}
                             <button class="btn btn-danger" id="activeBtn">Inactive</button>
-                        {%endif%}
-                        <a class="btn btn-success" href="{% url 'promotionRecords' student.id%}" role="button" >
+                        {% endif %}
+        
+                        <!-- Extra Buttons -->
+                        <a class="btn btn-success" href="{% url 'promotionRecords' student.id %}" role="button">
                             My Promotions
                         </a>
-                        {% if user.user_type == '3' or user.user_type == '1'%}
+        
+                        {% if user.user_type == '3' or user.user_type == '1' %}
                             <button class="btn btn-danger" onclick="logout()">Logout</button>
-                            <a class="btn btn-success" href="{% url 'studentGrades' student.id%}" role="button" >
+                            <a class="btn btn-success" href="{% url 'studentGrades' student.id %}" role="button">
                                 My Exams
                             </a>
                         {% endif %}
+        
+                        <!-- Latest Invoice -->
+                        <hr>
+                        {% if latest_unpaid_invoice %}
+                            <p class="card-text text-danger">
+                                <strong>Latest Unpaid Invoice:</strong> 
+                                {{ latest_unpaid_invoice.invoice_number }}  
+                                – Amount: ₦{{ latest_unpaid_invoice.total_amount|floatformat:2 }}  
+                                – Date: {{ latest_unpaid_invoice.issue_date|date:"M d, Y" }}
+                            </p>
+                        {% else %}
+                            <p class="card-text text-success">
+                                No unpaid invoices 🎉
+                            </p>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
         </div>
+        
 
         <!-- Courses Section -->
         <div id="courses" class="card mb-3" style="display: none;">
@@ -195,7 +229,55 @@
     </div>
 </div>
 
-<!-- change photo section -->
+    <!-- Invoices Section -->
+    <div id="invoices" class="card mb-3" style="display: none;">
+        <div class="card-body">
+            <h5 class="card-title">My Invoices</h5>
+            {% if invoices %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Invoice No</th>
+                            <th>Issue Date</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Items</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for invoice in invoices %}
+                        <tr>
+                            <td>{{ invoice.invoice_number }}</td>
+                            <td>{{ invoice.issue_date|date:"M d, Y" }}</td>
+                            <td>{{ invoice.due_date|date:"M d, Y" }}</td>
+                            <td>
+                                {% if invoice.is_paid %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Unpaid</span>
+                                {% endif %}
+                            </td>
+                            <td>₦{{ invoice.total_amount|floatformat:2 }}</td>
+                            <td>
+                                <ul class="list-unstyled m-0">
+                                    {% for item in invoice.items.all %}
+                                        <li>{{ item.category.name }} - ₦{{ item.amount|floatformat:2 }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <p>No invoices found.</p>
+            {% endif %}
+        </div>
+    </div>
+
 
 
 
@@ -279,7 +361,7 @@
         
         
         function showSection(section) {
-            ['profile', 'courses', 'grades', 'teachers', 'performanceChartSection'].forEach(sec => {
+            ['profile', 'courses', 'grades', 'teachers', 'performanceChartSection', 'invoices'].forEach(sec => {
                 document.getElementById(sec).style.display = 'none';
             });
             if(section === 'performanceChartSection') {
@@ -287,6 +369,7 @@
             }
             document.getElementById(section).style.display = 'block';
         }
+        
         
         const input = JSON.parse(document.getElementById('grades-data').textContent);
          console.log(input);
