@@ -44,3 +44,8 @@ class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
         fields = ["invoice", "amount", "date_paid", "payment_method", "transaction_id"]
+
+    def __init__(self, *args, **kwargs):
+        super(PaymentForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'form-control'})

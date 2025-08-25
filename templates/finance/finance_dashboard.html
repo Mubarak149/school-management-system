@@ -108,13 +108,30 @@
   <i class="bi bi-list fs-4"></i>
 </button>
 
+
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
-  <a href="#dashboard" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
-  <a href="#invoices"><i class="bi bi-cash-coin"></i> Invoices & Payments</a>
-  <a href="#fee-categories"><i class="bi bi-tags"></i> Fee Categories</a>
-  <a href="#fee-structures"><i class="bi bi-cash-stack"></i> Fee Structure</a>
+  <a href="#dashboard" class="active">
+    <i class="bi bi-speedometer2"></i> Dashboard
+  </a>
+
+  <a href="#invoices">
+    <i class="bi bi-cash-coin"></i> Invoices
+  </a>
+
+  <a href="#payments">
+    <i class="bi bi-credit-card-2-front"></i> Payments
+  </a>
+
+  <a href="#fee-categories">
+    <i class="bi bi-tags"></i> Fee Categories
+  </a>
+
+  <a href="#fee-structures">
+    <i class="bi bi-cash-stack"></i> Fee Structure
+  </a>
 </div>
+
 
 <!-- Content -->
 <div class="content">
@@ -353,7 +370,7 @@
             {% for inv in invoices %}
             <tr>
               <td>{{ inv.invoice_number }}</td>
-              <td>{{ inv.student }}</td>
+              <td>{{ inv.student}}</td>
               <td>₦{{ inv.total_amount|floatformat:2 }}</td>
               <td>
                 {% if inv.status == "PAID" %}
@@ -374,19 +391,44 @@
           </tbody>
         </table>
       </div>
+    </div>
+
+    <!-- Payment Management Section -->
+    <div id="payments" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
+      <h2 class="mb-4">Payments</h2>
 
       <!-- Create Payment -->
       <h3 class="mb-3">Record Payment</h3>
-      <form method="POST" action="{% url 'finance_dashboard' %}" class="row g-3">
+      <form 
+        hx-post="{% url 'create_payment' %}" 
+        hx-target="#payments-table-body" 
+        hx-swap="outerHTML"
+        hx-on="htmx:afterRequest: this.reset()"
+        class="row g-3"
+      >
         {% csrf_token %}
-        {{ payment_form.as_p }}
+        {% for field in payment_form %}
+          <div class="col-md-6">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}
+              <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+              <div class="text-danger">{{ error }}</div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+
         <div class="col-12">
-          <button type="submit" name="create_payment" class="btn btn-primary w-100">Save Payment</button>
+          <button type="submit" name="create_payment" class="btn btn-primary w-100">
+            Save Payment
+          </button>
         </div>
       </form>
 
       <!-- Payments Table -->
-      <h3 class="mt-5 mb-3">Payments</h3>
+      <h3 class="mt-5 mb-3">All Payments</h3>
       <div class="table-responsive">
         <table class="table table-striped align-middle">
           <thead class="table-dark">
@@ -397,23 +439,14 @@
               <th>Date</th>
             </tr>
           </thead>
-          <tbody>
-            {% for p in payments %}
-            <tr>
-              <td>{{ p.invoice.invoice_number }}</td>
-              <td>{{ p.invoice.student.user.username }}</td>
-              <td>₦{{ p.amount|floatformat:2 }}</td>
-              <td>{{ p.date_paid }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="4" class="text-center">No payments recorded</td>
-            </tr>
-            {% endfor %}
+          <tbody id="payments-table-body">
+            {% include "finance/partials/payments_table_rows.html" %}
           </tbody>
         </table>
       </div>
     </div>
+
+
 
 </div>
 

@@ -185,3 +185,16 @@ def send_invoice(request, fs_id):
             "message": "An unexpected error occurred.",
             "details": str(e)
         }, status=500)
+
+
+def create_payment(request):
+    if request.method == "POST":
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            payments = Payment.objects.all().order_by("-date_paid")
+            return render(request, "finance/partials/payments_table_rows.html", {
+                "payments": payments
+            })
+    return HttpResponse(status=405)
+

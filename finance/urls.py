@@ -17,4 +17,7 @@ urlpatterns = [
     path("fee-structures/<int:pk>/delete/", delete_fee_structure, name="delete_fee_structure"),
     #Invoice
     path("send-invoice/<int:fs_id>/", send_invoice, name="send_invoice"),
+    
+    #payment
+    path("create/payment/", create_payment, name="create_payment"),
 ]
