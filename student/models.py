@@ -34,7 +34,8 @@ class Student(models.Model):
     student_active = models.BooleanField(default=True)
     
     def __str__(self):
-        return self.user.first_name
+        return f"{self.user.first_name} {self.user.last_name} ({self.user.email})"
+
     
     def get_current_class(self):
         student_class = StudentClass.objects.filter(student=self, current_class=True).first()

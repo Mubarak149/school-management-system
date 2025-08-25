@@ -353,7 +353,7 @@
             {% for inv in invoices %}
             <tr>
               <td>{{ inv.invoice_number }}</td>
-              <td>{{ inv.student.user.username }}</td>
+              <td>{{ inv.student }}</td>
               <td>₦{{ inv.total_amount|floatformat:2 }}</td>
               <td>
                 {% if inv.status == "PAID" %}
