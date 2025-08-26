@@ -90,7 +90,6 @@ class InvoiceItem(models.Model):
 
 
 class Payment(models.Model):
-    """Stores payments for invoices"""
     invoice = models.ForeignKey(SchoolInvoice, on_delete=models.CASCADE, related_name="payments")
     amount = models.DecimalField(max_digits=12, decimal_places=2, validators=[MinValueValidator(0)])
     date_paid = models.DateTimeField(default=timezone.now)
@@ -98,12 +97,7 @@ class Payment(models.Model):
         max_length=20,
         choices=[("cash", "Cash"), ("bank", "Bank Transfer"), ("online", "Online Gateway")]
     )
-    transaction_id = models.CharField(max_length=100, blank=True, null=True)  # for receipts/gateway
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        # update invoice status whenever payment is recorded
-        self.invoice.update_status()
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"Payment of {self.amount} for {self.invoice.invoice_number}"

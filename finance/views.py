@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.db import transaction, DatabaseError
+from django.core.paginator import Paginator
 from .forms import (InvoiceForm, PaymentForm, InvoiceItemForm,
                     FeeCategoryForm, FeeStructureForm)
 from .models import (SchoolInvoice, InvoiceItem, 
@@ -11,31 +12,44 @@ from student.models import Student
 from main.models import AcademicSession
 
 
+
 def finance_dashboard(request):
     # 1. Get all students and invoices to display in dashboard
     students = Student.objects.all() 
-    invoices = SchoolInvoice.objects.all()
-    payments = Payment.objects.all() 
+    
+    # --- PAGINATION FOR INVOICES ---
+    invoice_list = SchoolInvoice.objects.all().order_by("-id")  # latest first
+    invoice_paginator = Paginator(invoice_list, 5)  # 5 invoices per page
+    invoice_page_number = request.GET.get("invoice_page")
+    invoices = invoice_paginator.get_page(invoice_page_number)
+
+    # --- PAGINATION FOR PAYMENTS ---
+    payment_list = Payment.objects.all().order_by("-id")
+    payment_paginator = Paginator(payment_list, 5)  # 5 payments per page
+    payment_page_number = request.GET.get("payment_page")
+    payments = payment_paginator.get_page(payment_page_number)
+
     category = FeeCategory.objects.all()
     category_form = FeeCategoryForm()
     fee_structure_form = FeeStructureForm()
     fee_structure = FeeStructure.objects.all()
    
     payment_form = PaymentForm()
-    invoice_form = InvoiceForm(request.POST)
+    invoice_form = InvoiceForm(request.POST or None)
    
     context = {
         "students": students,
-        "invoices": invoices,
-        "payments": payments,
+        "invoices": invoices,   # now paginated
+        "payments": payments,   # now paginated
         "invoice_form": invoice_form,
         "payment_form": payment_form,
-        "categories":category,
+        "categories": category,
         "category_form": category_form,
-        'fee_structure_form':fee_structure_form,
-        "structures":fee_structure,
+        'fee_structure_form': fee_structure_form,
+        "structures": fee_structure,
     }
     return render(request, "finance/finance_dashboard.html", context)
+
 
 def category_row(request, pk):
     category = get_object_or_404(FeeCategory, pk=pk)
@@ -198,3 +212,16 @@ def create_payment(request):
             })
     return HttpResponse(status=405)
 
+def payment_page(request, page):
+    payments = Payment.objects.select_related("invoice").order_by("-date_paid")
+    paginator = Paginator(payments, 5)  # 5 per page
+    page_obj = paginator.get_page(page)
+    return render(request, "finance/partials/payment_rows.html", {"payments": page_obj})
+
+def invoice_page(request, page):
+    import  time
+    time.sleep(1)
+    invoices = SchoolInvoice.objects.all().order_by("-due_date")
+    paginator = Paginator(invoices, 5)  # 5 per page
+    page_obj = paginator.get_page(page)
+    return render(request, "finance/partials/invoice_rows.html", {"invoices": page_obj})

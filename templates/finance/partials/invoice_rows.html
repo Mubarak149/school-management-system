@@ -1,0 +1,23 @@
+{% for inv in invoices %}
+<tr>
+  <td>{{ inv.invoice_number }}</td>
+  <td>{{ inv.student }}</td>
+  <td>₦{{ inv.balance|floatformat:2 }}</td>
+  <td>
+    {% if inv.status == "paid" %}
+      <span class="badge bg-success">{{ inv.get_status_display }}</span>
+    {% elif inv.status == "partial" %}
+      <span class="badge bg-warning text-dark">{{ inv.get_status_display }}</span>
+    {% elif inv.status == "unpaid" %}
+      <span class="badge bg-danger">{{ inv.get_status_display }}</span>
+    {% elif inv.status == "cancelled" %}
+      <span class="badge bg-secondary">{{ inv.get_status_display }}</span>
+    {% endif %}
+  </td>
+  <td>{{ inv.due_date }}</td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="5" class="text-center">No invoices found</td>
+</tr>
+{% endfor %}

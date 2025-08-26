@@ -1,7 +1,7 @@
 {% for p in payments %}
 <tr>
   <td>{{ p.invoice.invoice_number }}</td>
-  <td>{{ p.invoice.student.user.username }}</td>
+  <td>{{ p.invoice.student}}</td>
   <td>₦{{ p.amount|floatformat:2 }}</td>
   <td>{{ p.date_paid }}</td>
 </tr>
