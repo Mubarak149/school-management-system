@@ -14,7 +14,10 @@ urlpatterns = [
     path("fee-structures/", fee_structures_view, name="fee_structures"),
     path("fee-structures/create/", create_fee_structure, name="create_fee_structure"),
     path("fee-structures/<int:pk>/edit/", edit_fee_structure, name="edit_fee_structure"),
+    path("cancel_fee-structures/<int:pk>/", cancel_edit_fee_structure, name="cancel_edit_fee_structure"),
+    path("fee-structures/page/<int:page>/", fee_structure_page, name="fee_structure_page"),
     path("fee-structures/<int:pk>/delete/", delete_fee_structure, name="delete_fee_structure"),
+
     #Invoice
     path("send-invoice/<int:fs_id>/", send_invoice, name="send_invoice"),
     path("invoices/page/<int:page>/", invoice_page, name="invoice_page"),

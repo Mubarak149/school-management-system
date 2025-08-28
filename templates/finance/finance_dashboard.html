@@ -307,32 +307,26 @@
         hx-on="htmx:responseError: alert(event.detail.xhr.responseText)"
         class="row g-3 mb-4">
         {% csrf_token %}
-
         <div class="col-md-6">
           <label for="id_school_class" class="form-label fw-bold">Class</label>
           {{ fee_structure_form.school_class }}
         </div>
-
         <div class="col-md-6">
           <label for="id_session" class="form-label fw-bold">Session</label>
           {{ fee_structure_form.session }}
         </div>
-
         <div class="col-md-6">
           <label for="id_term" class="form-label fw-bold">Term</label>
           {{ fee_structure_form.term }}
         </div>
-
         <div class="col-md-6">
           <label for="id_category" class="form-label fw-bold">Category</label>
           {{ fee_structure_form.category }}
         </div>
-
         <div class="col-md-6">
           <label for="id_amount" class="form-label fw-bold">Amount</label>
           {{ fee_structure_form.amount }}
         </div>
-
         <div class="col-12">
           <button type="submit" class="btn btn-primary w-100">
             <i class="bi bi-plus-circle"></i> Add Fee Structure
@@ -340,6 +334,16 @@
         </div>
       </form>
 
+      <!-- Search Bar -->
+      <div class="mb-3">
+        <input 
+          type="text" 
+          id="fee-structure-search" 
+          class="form-control" 
+          placeholder="Search fee structures..."
+          onkeyup="filterFeeStructures()" 
+        />
+      </div>
 
       <!-- Structures Table -->
       <div class="table-responsive">
@@ -354,18 +358,55 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="fee-structures-body">
-            {% for fs in structures %}
-              {% include "finance/partials/fee_structure_row.html" %}
-            {% empty %}
-            <tr>
-              <td colspan="6" class="text-center">No fee structures yet.</td>
-            </tr>
-            {% endfor %}
+          <tbody id="fee-structures-body"
+                hx-get="{% url 'fee_structure_page' 1 %}"
+                hx-trigger="load"
+                hx-target="#fee-structures-body"
+                hx-swap="innerHTML">
+                {% include "finance/partials/fee_structure_list.html" %}
           </tbody>
         </table>
       </div>
+
+      <!-- Pagination Controls -->
+      <nav>
+        <ul class="pagination justify-content-center">
+          {% if structures.has_previous %}
+            <li class="page-item">
+              <a class="page-link"
+                hx-get="{% url 'fee_structure_page' structures.previous_page_number %}"
+                hx-target="#fee-structures-body"
+                hx-swap="innerHTML">
+                Previous
+              </a>
+            </li>
+          {% endif %}
+
+          {% for page_num in structures.paginator.page_range %}
+            <li class="page-item {% if page_num == structures.number %}active{% endif %}">
+              <a class="page-link"
+                hx-get="{% url 'fee_structure_page' page_num %}"
+                hx-target="#fee-structures-body"
+                hx-swap="innerHTML">
+                {{ page_num }}
+              </a>
+            </li>
+          {% endfor %}
+
+          {% if structures.has_next %}
+            <li class="page-item">
+              <a class="page-link"
+                hx-get="{% url 'fee_structure_page' structures.next_page_number %}"
+                hx-target="#fee-structures-body"
+                hx-swap="innerHTML">
+                Next
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
     </div>
+
 
   
     <!-- Invoice Management Section -->
@@ -593,6 +634,18 @@
       row.style.display = text.includes(filter) ? "" : "none";
     });
   }
+
+  function filterFeeStructures() {
+    const input = document.getElementById("fee-structure-search");
+    const filter = input.value.toLowerCase();
+    const rows = document.querySelectorAll("#fee-structures-body tr");
+  
+    rows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(filter) ? "" : "none";
+    });
+  }
+  
   // Sidebar navigation
   document.querySelectorAll('.sidebar a').forEach(link => {
     link.addEventListener('click', e => {

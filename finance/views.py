@@ -12,9 +12,10 @@ from student.models import Student
 from main.models import AcademicSession
 
 
+from django.core.paginator import Paginator
 
 def finance_dashboard(request):
-    # 1. Get all students and invoices to display in dashboard
+    # 1. Get all students
     students = Student.objects.all() 
     
     # --- PAGINATION FOR INVOICES ---
@@ -29,26 +30,32 @@ def finance_dashboard(request):
     payment_page_number = request.GET.get("payment_page")
     payments = payment_paginator.get_page(payment_page_number)
 
+    # --- PAGINATION FOR FEE STRUCTURE ---
+    fee_structure_list = FeeStructure.objects.all().order_by("-id")
+    fee_structure_paginator = Paginator(fee_structure_list, 5)  # 5 structures per page
+    fee_structure_page_number = request.GET.get("structure_page")
+    fee_structure = fee_structure_paginator.get_page(fee_structure_page_number)
+
+    # Forms
     category = FeeCategory.objects.all()
     category_form = FeeCategoryForm()
     fee_structure_form = FeeStructureForm()
-    fee_structure = FeeStructure.objects.all()
-   
     payment_form = PaymentForm()
     invoice_form = InvoiceForm(request.POST or None)
    
     context = {
         "students": students,
-        "invoices": invoices,   # now paginated
-        "payments": payments,   # now paginated
+        "invoices": invoices,       # paginated invoices
+        "payments": payments,       # paginated payments
+        "structures": fee_structure,  # paginated fee structures
         "invoice_form": invoice_form,
         "payment_form": payment_form,
         "categories": category,
         "category_form": category_form,
         'fee_structure_form': fee_structure_form,
-        "structures": fee_structure,
     }
     return render(request, "finance/finance_dashboard.html", context)
+
 
 
 def category_row(request, pk):
@@ -117,10 +124,29 @@ def edit_fee_structure(request, pk):
     html = render_to_string("finance/partials/fee_structure_edit.html", {"form": form, "fs": fs},request=request)
     return HttpResponse(html)
 
+def cancel_edit_fee_structure(request, pk):
+    fs = get_object_or_404(FeeStructure, pk=pk)
+    html = render_to_string("finance/partials/fee_structure_row.html", {"fs": fs},request=request)
+    return HttpResponse(html)
+
+
 def delete_fee_structure(request, pk):
     fs = get_object_or_404(FeeStructure, pk=pk)
     fs.delete()
     return HttpResponse("")  # HTMX will remove the row
+
+
+def fee_structure_page(request, page):
+    structures = FeeStructure.objects.all().select_related(
+        "school_class", "session", "category"
+    ).order_by("-id")
+    paginator = Paginator(structures, 10)
+    page_obj = paginator.get_page(page)
+
+    return render(request, "finance/partials/fee_structure_list.html", {
+        "structures": page_obj,
+    })
+
 
 
 def send_invoice(request, fs_id):

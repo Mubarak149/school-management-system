@@ -1,0 +1,7 @@
+{% for fs in structures %}
+  {% include "finance/partials/fee_structure_row.html" %}
+{% empty %}
+  <tr>
+    <td colspan="6" class="text-center">No fee structures yet.</td>
+  </tr>
+{% endfor %}
