@@ -184,38 +184,43 @@
     </div>
   </div>
 
-    <!-- Per-Class Breakdown -->
-    <div class="bg-white p-4 rounded shadow-sm">
-      <h4 class="mb-3">Class Finance Breakdown</h4>
-      <div class="table-responsive">
-        <table class="table table-striped align-middle">
-          <thead class="table-dark">
-            <tr>
-              <th>Class</th>
-              <th>Total Students</th>
-              <th>Paid</th>
-              <th>Unpaid</th>
-              <th>Total Collected</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for stat in class_stats %}
-            <tr>
-              <td>{{ stat.class_name }}</td>
-              <td>{{ stat.total_students }}</td>
-              <td class="text-success fw-bold">{{ stat.paid }}</td>
-              <td class="text-danger fw-bold">{{ stat.unpaid }}</td>
-              <td>₦{{ stat.collected|floatformat:2 }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-              <td colspan="5" class="text-center">No class data available</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <!-- Outstanding Balances -->
+  <div class="bg-white p-4 mt-4 rounded shadow-sm">
+    <h4 class="mb-3"><i class="bi bi-exclamation-triangle text-danger"></i> Outstanding Balances</h4>
+    
+    <div class="row g-3">
+      <div class="col-md-4">
+        <div class="card border-danger shadow-sm">
+          <div class="card-body text-center">
+            <h6 class="text-danger">Unpaid Invoices</h6>
+            <h3>{{ unpaid_invoices.count }}</h3>
+            <a href="#invoices" class="btn btn-sm btn-outline-danger mt-2">View</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card border-warning shadow-sm">
+          <div class="card-body text-center">
+            <h6 class="text-warning">Partially Paid</h6>
+            <h3>{{ partial_invoices.count }}</h3>
+            <a href="#invoices" class="btn btn-sm btn-outline-warning mt-2">View</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card border-success shadow-sm">
+          <div class="card-body text-center">
+            <h6 class="text-success">Fully Paid</h6>
+            <h3>{{ paid_invoices.count }}</h3>
+            <a href="#invoices" class="btn btn-sm btn-outline-success mt-2">View</a>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
+
 </div>
 
   <!-- Fee Categories Section -->
@@ -377,13 +382,16 @@
       <h2 class="mb-4">Invoices</h2>
 
       <!-- Search Bar -->
-      <div class="mb-3">
-        <input 
-          type="text" 
-          class="form-control" 
-          id="invoice-search"
-          placeholder="Search invoices..."
-          onkeyup="filterInvoices()">
+
+      <div class="mb-3 d-flex justify-content-between">
+        <input type="text" class="form-control w-50" id="invoice-search" placeholder="Search invoices..." onkeyup="filterInvoices()">
+      
+        <select class="form-select w-25" id="invoice-status-filter" onchange="filterByStatus()">
+          <option value="">All</option>
+          <option value="unpaid">Unpaid</option>
+          <option value="partial">Partially Paid</option>
+          <option value="paid">Paid</option>
+        </select>
       </div>
 
       <!-- Invoice Table -->
@@ -478,8 +486,10 @@
 
         </table>
       </div>
-      
     </div>
+
+
+    
     
 </div>
 
@@ -560,19 +570,41 @@
     });
   }
   
+  function filterByStatus() {
+    const status = document.getElementById("invoice-status-filter").value.toLowerCase();
+    const rows = document.querySelectorAll("#invoice-container tr");
   
-  // Sidebar navigation
-  document.querySelectorAll('.sidebar a').forEach(link => {
+    rows.forEach(row => {
+      const statusCell = row.querySelector("td:nth-child(4)"); // assuming status is 4th column
+      if (!status || (statusCell && statusCell.innerText.toLowerCase().includes(status))) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  }
+  
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
     link.addEventListener('click', e => {
       e.preventDefault();
+  
+      // Optional: remove active state only if it's from the sidebar
       document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
-      link.classList.add('active');
-
+      if (link.closest('.sidebar')) {
+        link.classList.add('active');
+      }
+  
+      // Hide all sections
       document.querySelectorAll('.content > div').forEach(div => div.style.display = 'none');
-      document.getElementById(link.getAttribute('href').replace('#', '')).style.display = 'block';
+  
+      // Show the target section
+      const target = document.getElementById(link.getAttribute('href').replace('#', ''));
+      if (target) {
+        target.style.display = 'block';
+      }
     });
   });
-
+  
   // Mobile toggle
   document.getElementById('toggle-btn').addEventListener('click', () => {
     document.getElementById('sidebar').classList.toggle('show');

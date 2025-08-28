@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.db import transaction, DatabaseError
+from django.db.models import Sum, Count, Q
 from django.core.paginator import Paginator
 from .forms import (InvoiceForm, PaymentForm, InvoiceItemForm,
                     FeeCategoryForm, FeeStructureForm)
@@ -12,49 +13,64 @@ from student.models import Student
 from main.models import AcademicSession
 
 
-from django.core.paginator import Paginator
+
+
+
 
 def finance_dashboard(request):
-    # 1. Get all students
-    students = Student.objects.all() 
-    
+    # Aggregate stats in ONE query
+    invoice_status_counts = SchoolInvoice.objects.aggregate(
+        unpaid=Count("id", filter=Q(status="unpaid")),
+        partial=Count("id", filter=Q(status="partial")),
+        paid=Count("id", filter=Q(status="paid")),
+    )
+
+    total_students = Student.objects.count()
+    total_collected = Payment.objects.aggregate(total=Sum("amount"))["total"] or 0
+
     # --- PAGINATION FOR INVOICES ---
-    invoice_list = SchoolInvoice.objects.all().order_by("-id")  # latest first
-    invoice_paginator = Paginator(invoice_list, 5)  # 5 invoices per page
-    invoice_page_number = request.GET.get("invoice_page")
-    invoices = invoice_paginator.get_page(invoice_page_number)
+    invoice_list = SchoolInvoice.objects.all().only(
+        "id", "invoice_number", "status", "due_date", "student_id"
+    ).select_related("student").order_by("-id")
+    invoice_paginator = Paginator(invoice_list, 5)
+    invoices = invoice_paginator.get_page(request.GET.get("invoice_page"))
 
     # --- PAGINATION FOR PAYMENTS ---
-    payment_list = Payment.objects.all().order_by("-id")
-    payment_paginator = Paginator(payment_list, 5)  # 5 payments per page
-    payment_page_number = request.GET.get("payment_page")
-    payments = payment_paginator.get_page(payment_page_number)
+    payment_list = Payment.objects.all().only(
+        "id", "amount", "date_paid", "payment_method", "invoice_id"
+    ).select_related("invoice").order_by("-id")
+    payment_paginator = Paginator(payment_list, 5)
+    payments = payment_paginator.get_page(request.GET.get("payment_page"))
 
     # --- PAGINATION FOR FEE STRUCTURE ---
-    fee_structure_list = FeeStructure.objects.all().order_by("-id")
-    fee_structure_paginator = Paginator(fee_structure_list, 5)  # 5 structures per page
-    fee_structure_page_number = request.GET.get("structure_page")
-    fee_structure = fee_structure_paginator.get_page(fee_structure_page_number)
+    fee_structure_list = FeeStructure.objects.all().only(
+        "id", "amount", "term", "school_class_id", "category_id"
+    ).select_related("school_class", "category").order_by("-id")
+    fee_structure_paginator = Paginator(fee_structure_list, 5)
+    fee_structure = fee_structure_paginator.get_page(request.GET.get("structure_page"))
 
     # Forms
-    category = FeeCategory.objects.all()
-    category_form = FeeCategoryForm()
-    fee_structure_form = FeeStructureForm()
-    payment_form = PaymentForm()
-    invoice_form = InvoiceForm(request.POST or None)
-   
+    category = FeeCategory.objects.all().only("id", "name")
     context = {
-        "students": students,
-        "invoices": invoices,       # paginated invoices
-        "payments": payments,       # paginated payments
-        "structures": fee_structure,  # paginated fee structures
-        "invoice_form": invoice_form,
-        "payment_form": payment_form,
+        "students": total_students,  # don't fetch all students unless needed
+        "invoices": invoices,
+        "payments": payments,
+        "structures": fee_structure,
+        "invoice_form": InvoiceForm(),
+        "payment_form": PaymentForm(),
         "categories": category,
-        "category_form": category_form,
-        'fee_structure_form': fee_structure_form,
+        "category_form": FeeCategoryForm(),
+        "fee_structure_form": FeeStructureForm(),
+        "total_students": total_students,
+        "students_paid": invoice_status_counts["paid"],
+        "students_unpaid": invoice_status_counts["unpaid"] + invoice_status_counts["partial"],
+        "total_collected": total_collected,
+        "unpaid_invoices": invoice_status_counts["unpaid"],
+        "partial_invoices": invoice_status_counts["partial"],
+        "paid_invoices": invoice_status_counts["paid"],
     }
     return render(request, "finance/finance_dashboard.html", context)
+
 
 
 
@@ -129,12 +145,10 @@ def cancel_edit_fee_structure(request, pk):
     html = render_to_string("finance/partials/fee_structure_row.html", {"fs": fs},request=request)
     return HttpResponse(html)
 
-
 def delete_fee_structure(request, pk):
     fs = get_object_or_404(FeeStructure, pk=pk)
     fs.delete()
     return HttpResponse("")  # HTMX will remove the row
-
 
 def fee_structure_page(request, page):
     structures = FeeStructure.objects.all().order_by("school_class")
