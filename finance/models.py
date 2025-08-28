@@ -99,5 +99,8 @@ class Payment(models.Model):
     )
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
 
+    class Meta:
+        ordering = ["-date_paid"]  # ✅ default sort
+
     def __str__(self):
         return f"Payment of {self.amount} for {self.invoice.invoice_number}"

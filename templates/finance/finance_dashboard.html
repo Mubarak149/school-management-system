@@ -358,53 +358,16 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="fee-structures-body"
+          <tbody id="fee-structures-container"
                 hx-get="{% url 'fee_structure_page' 1 %}"
                 hx-trigger="load"
-                hx-target="#fee-structures-body"
+                hx-target="#fee-structures-container"
                 hx-swap="innerHTML">
-                {% include "finance/partials/fee_structure_list.html" %}
+            {% include "finance/partials/fee_structure_table.html" %}
           </tbody>
         </table>
       </div>
 
-      <!-- Pagination Controls -->
-      <nav>
-        <ul class="pagination justify-content-center">
-          {% if structures.has_previous %}
-            <li class="page-item">
-              <a class="page-link"
-                hx-get="{% url 'fee_structure_page' structures.previous_page_number %}"
-                hx-target="#fee-structures-body"
-                hx-swap="innerHTML">
-                Previous
-              </a>
-            </li>
-          {% endif %}
-
-          {% for page_num in structures.paginator.page_range %}
-            <li class="page-item {% if page_num == structures.number %}active{% endif %}">
-              <a class="page-link"
-                hx-get="{% url 'fee_structure_page' page_num %}"
-                hx-target="#fee-structures-body"
-                hx-swap="innerHTML">
-                {{ page_num }}
-              </a>
-            </li>
-          {% endfor %}
-
-          {% if structures.has_next %}
-            <li class="page-item">
-              <a class="page-link"
-                hx-get="{% url 'fee_structure_page' structures.next_page_number %}"
-                hx-target="#fee-structures-body"
-                hx-swap="innerHTML">
-                Next
-              </a>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
     </div>
 
 
@@ -435,53 +398,15 @@
               <th>Due Date</th>
             </tr>
           </thead>
-          <tbody id="invoice-table-body"
-                hx-get="{% url 'invoice_page' 1 %}"
-                hx-trigger="load"
-                hx-target="#invoice-table-body"
-                hx-swap="innerHTML">
-            {% include "finance/partials/invoice_rows.html" %}
+          <tbody id="invoice-container"
+             hx-get="{% url 'invoice_page' 1 %}"
+             hx-trigger="load"
+             hx-target="#invoice-container"
+             hx-swap="innerHTML">
+            {% include "finance/partials/invoice_list.html" %}
           </tbody>
         </table>
       </div>
-
-      <!-- Pagination Controls -->
-      <nav>
-        <ul class="pagination justify-content-center">
-          {% if invoices.has_previous %}
-            <li class="page-item">
-              <a class="page-link"
-                hx-get="{% url 'invoice_page' invoices.previous_page_number %}"
-                hx-target="#invoice-table-body"
-                hx-swap="innerHTML">
-                Previous
-              </a>
-            </li>
-          {% endif %}
-
-          {% for page_num in invoices.paginator.page_range %}
-            <li class="page-item {% if page_num == invoices.number %}active{% endif %}">
-              <a class="page-link"
-                hx-get="{% url 'invoice_page' page_num %}"
-                hx-target="#invoice-table-body"
-                hx-swap="innerHTML">
-                {{ page_num }}
-              </a>
-            </li>
-          {% endfor %}
-
-          {% if invoices.has_next %}
-            <li class="page-item">
-              <a class="page-link"
-                hx-get="{% url 'invoice_page' invoices.next_page_number %}"
-                hx-target="#invoice-table-body"
-                hx-swap="innerHTML">
-                Next
-              </a>
-            </li>
-          {% endif %}
-        </ul>
-      </nav>
     </div>
 
 
@@ -543,35 +468,15 @@
               <th>Date</th>
             </tr>
           </thead>
-          <tbody id="payments-table-body">
-            {% include "finance/partials/payments_table_rows.html" %}
+          <tbody id="payments-container"
+                hx-get="{% url 'payment_page' 1 %}"
+                hx-trigger="load"
+                hx-target="#payments-container"
+                hx-swap="innerHTML">
+            {% include "finance/partials/payments_table.html" %}
           </tbody>
+
         </table>
-      </div>
-    
-      <!-- Pagination Controls -->
-      <div class="mt-3">
-        <nav>
-          <ul class="pagination pagination-sm justify-content-center">
-            {% if payments.has_previous %}
-              <li class="page-item">
-                <a class="page-link" href="?payment_page={{ payments.previous_page_number }}">Previous</a>
-              </li>
-            {% endif %}
-      
-            <li class="page-item disabled">
-              <span class="page-link">
-                Page {{ payments.number }} of {{ payments.paginator.num_pages }}
-              </span>
-            </li>
-      
-            {% if payments.has_next %}
-              <li class="page-item">
-                <a class="page-link" href="?payment_page={{ payments.next_page_number }}">Next</a>
-              </li>
-            {% endif %}
-          </ul>
-        </nav>
       </div>
       
     </div>
@@ -622,29 +527,39 @@
     }
   });
 
-
-
   function filterInvoices() {
     const input = document.getElementById("invoice-search");
     const filter = input.value.toLowerCase();
-    const rows = document.querySelectorAll("#invoice-table-body tr");
+    const rows = document.querySelectorAll("#invoice-container tr");  // FIXED
+    
+    rows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      row.style.display = text.includes(filter) ? "" : "none";
+    });
+  }
   
+  function filterFeeStructures() {
+    const input = document.getElementById("fee-structure-search");
+    const filter = input.value.toLowerCase();
+    const rows = document.querySelectorAll("#fee-structures-container tr");  // FIXED
+    
     rows.forEach(row => {
       const text = row.innerText.toLowerCase();
       row.style.display = text.includes(filter) ? "" : "none";
     });
   }
 
-  function filterFeeStructures() {
-    const input = document.getElementById("fee-structure-search");
+  function filterPayments() {
+    const input = document.getElementById("payment-search");
     const filter = input.value.toLowerCase();
-    const rows = document.querySelectorAll("#fee-structures-body tr");
-  
+    const rows = document.querySelectorAll("#payments-container tr");  // FIXED
+    
     rows.forEach(row => {
       const text = row.innerText.toLowerCase();
       row.style.display = text.includes(filter) ? "" : "none";
     });
   }
+  
   
   // Sidebar navigation
   document.querySelectorAll('.sidebar a').forEach(link => {

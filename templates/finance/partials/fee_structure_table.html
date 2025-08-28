@@ -1,0 +1,21 @@
+{% include "finance/partials/fee_structure_list.html" %}
+
+<!-- Pagination -->
+<tr>
+  <td colspan="6">
+    <nav>
+      <ul class="pagination justify-content-center">
+        {% for page_num in structures.paginator.page_range %}
+          <li class="page-item {% if page_num == structures.number %}active{% endif %}">
+            <a class="page-link"
+               hx-get="{% url 'fee_structure_page' page_num %}"
+               hx-target="#fee-structures-container"
+               hx-swap="innerHTML">
+              {{ page_num }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </td>
+</tr>

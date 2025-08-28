@@ -1,0 +1,21 @@
+{% include "finance/partials/invoice_rows.html" %}
+
+<!-- Pagination Controls -->
+<tr>
+  <td colspan="5">
+    <nav>
+      <ul class="pagination justify-content-center">
+        {% for page_num in invoices.paginator.page_range %}
+          <li class="page-item {% if page_num == invoices.number %}active{% endif %}">
+            <a class="page-link"
+               hx-get="{% url 'invoice_page' page_num %}"
+               hx-target="#invoice-container"
+               hx-swap="innerHTML">
+              {{ page_num }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </td>
+</tr>

@@ -137,17 +137,34 @@ def delete_fee_structure(request, pk):
 
 
 def fee_structure_page(request, page):
-    structures = FeeStructure.objects.all().select_related(
-        "school_class", "session", "category"
-    ).order_by("-id")
-    paginator = Paginator(structures, 10)
+    structures = FeeStructure.objects.all().order_by("school_class")
+    paginator = Paginator(structures, 5)
     page_obj = paginator.get_page(page)
-
-    return render(request, "finance/partials/fee_structure_list.html", {
-        "structures": page_obj,
-    })
+    return render(request, "finance/partials/fee_structure_table.html", {"structures": page_obj})
 
 
+def create_payment(request):
+    if request.method == "POST":
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            form.save()
+            payments = Payment.objects.all().order_by("-date_paid")
+            return render(request, "finance/partials/payments_table_rows.html", {
+                "payments": payments
+            })
+    return HttpResponse(status=405)
+
+def payment_page(request, page):
+    payments = Payment.objects.all()
+    paginator = Paginator(payments, 20)
+    page_obj = paginator.get_page(page)
+    return render(request, "finance/partials/payments_table.html", {"payments": page_obj})
+
+def invoice_page(request, page):
+    invoices = SchoolInvoice.objects.all().order_by("-due_date")
+    paginator = Paginator(invoices, 20)
+    page_obj = paginator.get_page(page)
+    return render(request, "finance/partials/invoice_list.html", {"invoices": page_obj})
 
 def send_invoice(request, fs_id):
     """
@@ -226,28 +243,3 @@ def send_invoice(request, fs_id):
             "details": str(e)
         }, status=500)
 
-
-def create_payment(request):
-    if request.method == "POST":
-        form = PaymentForm(request.POST)
-        if form.is_valid():
-            form.save()
-            payments = Payment.objects.all().order_by("-date_paid")
-            return render(request, "finance/partials/payments_table_rows.html", {
-                "payments": payments
-            })
-    return HttpResponse(status=405)
-
-def payment_page(request, page):
-    payments = Payment.objects.select_related("invoice").order_by("-date_paid")
-    paginator = Paginator(payments, 5)  # 5 per page
-    page_obj = paginator.get_page(page)
-    return render(request, "finance/partials/payment_rows.html", {"payments": page_obj})
-
-def invoice_page(request, page):
-    import  time
-    time.sleep(1)
-    invoices = SchoolInvoice.objects.all().order_by("-due_date")
-    paginator = Paginator(invoices, 5)  # 5 per page
-    page_obj = paginator.get_page(page)
-    return render(request, "finance/partials/invoice_rows.html", {"invoices": page_obj})
