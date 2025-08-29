@@ -62,7 +62,13 @@ class SchoolInvoice(models.Model):
         return sum(payment.amount for payment in self.payments.all())
 
     def balance(self):
-        return self.total_amount() - self.amount_paid()
+        return max(self.total_amount() - self.amount_paid(), 0)
+    
+    def overpayment(self):
+        extra = self.amount_paid() - self.total_amount()
+        return max(extra, 0)
+
+
 
     def update_status(self):
         paid = self.amount_paid()
