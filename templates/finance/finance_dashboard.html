@@ -121,6 +121,10 @@
     </div>
   </div>
 
+  <!-- Notification -->
+  <!-- Bootstrap Alert Container -->
+  <div id="global-alert" class="position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 2000; width: 50%;"></div>
+
 <!-- Sidebar toggle -->
 <button class="toggle-btn" id="toggle-btn">
   <i class="bi bi-list fs-4"></i>
@@ -302,12 +306,13 @@
 
   <!-- Fee Structures Section -->
     <div id="fee-structures" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
+      <div id="invoice-message"></div>
       <h2 class="mb-4"><i class="bi bi-table"></i> Fee Structures</h2>
 
       <!-- Create Fee Structure Form -->
       <form 
         hx-post="{% url 'create_fee_structure' %}" 
-        hx-target="#fee-structures-body" 
+        hx-target="#fee-structures-container" 
         hx-swap="afterbegin"
         hx-on="htmx:responseError: alert(event.detail.xhr.responseText)"
         class="row g-3 mb-4">
@@ -379,6 +384,7 @@
   
     <!-- Invoice Management Section -->
     <div id="invoices" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
+      
       <h2 class="mb-4">Invoices</h2>
 
       <!-- Search Bar -->
@@ -497,38 +503,42 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   const spinner = document.getElementById("htmx-loading");
-  // HTMX request lifecycle
+  const alertBox = document.getElementById("global-alert");
+  
+  // Show Bootstrap alert
+  function showAlert(message, type = "success", timeout = 4000) {
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = `
+      <div class="alert alert-${type} alert-dismissible fade show shadow" role="alert">
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    `;
+    alertBox.append(wrapper);
+  
+    // Auto remove after timeout
+    setTimeout(() => {
+      wrapper.querySelector(".alert").classList.remove("show");
+      wrapper.querySelector(".alert").classList.add("fade");
+      setTimeout(() => wrapper.remove(), 300);
+    }, timeout);
+  }
+  
+  // HTMX request lifecycle (spinner only)
   document.body.addEventListener("htmx:beforeRequest", () => {
     if (spinner) {
       spinner.classList.remove("hidden");
       spinner.classList.add("flex");
     }
   });
-
+  
   document.body.addEventListener("htmx:afterRequest", () => {
     if (spinner) {
       spinner.classList.add("hidden");
       spinner.classList.remove("flex");
     }
   });
-
-  // When HTMX swaps content in (like invoice table), hide spinner
-  document.body.addEventListener("htmx:afterOnLoad", () => {
-    if (spinner) {
-      spinner.classList.add("hidden");
-      spinner.classList.remove("flex");
-    }
-  });
-
-  // Error handling
-  document.body.addEventListener("htmx:responseError", () => {
-    if (spinner) {
-      spinner.classList.add("hidden");
-      spinner.classList.remove("flex");
-    }
-    alert("An error occurred while processing your request.");
-  });
-
+  
   // Ensure spinner is hidden on full page reload
   document.addEventListener("DOMContentLoaded", () => {
     if (spinner) {
@@ -536,6 +546,14 @@
       spinner.classList.remove("flex");
     }
   });
+  
+  // 🔑 Only show messages explicitly triggered by server
+  document.body.addEventListener("showMessage", (event) => {
+    const { message, type } = event.detail;
+    showAlert(message, type);
+  });
+  
+  
 
   function filterInvoices() {
     const input = document.getElementById("invoice-search");

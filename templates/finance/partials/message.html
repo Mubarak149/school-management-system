@@ -1,0 +1,20 @@
+{% if success %}
+    <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+    ✅ {{ count }} invoices created successfully.
+    {% if errors %}
+        <br>
+        <strong>Skipped:</strong>
+        <ul>
+        {% for err in errors %}
+            <li>{{ err }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+{% else %}
+    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+    ❌ Error: {{ error }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+{% endif %}

@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
@@ -117,14 +118,36 @@ def fee_structures_view(request):
         "form": form,
     })
 
+
 def create_fee_structure(request):
     if request.method == "POST":
         form = FeeStructureForm(request.POST)
         if form.is_valid():
             structure = form.save()
-            html = render_to_string("finance/partials/fee_structure_row.html", {"fs": structure})
-            return HttpResponse(html)
-        return HttpResponse("Invalid data", status=400)
+            
+            # Render the row for updating the table
+            html = render_to_string(
+                "finance/partials/fee_structure_row.html",
+                {"fs": structure},
+                request=request
+            )
+
+            # ✅ Success message
+            message = f"✅ Fee structure '{structure}' created successfully."
+
+            response = HttpResponse(html)
+            response["HX-Trigger"] = json.dumps({
+                "showMessage": {"message": message, "type": "success"}
+            })
+            return response
+
+        # ❌ Invalid form
+        response = HttpResponse("Invalid data", status=400)
+        response["HX-Trigger"] = json.dumps({
+            "showMessage": {"message": "❌ Invalid fee structure data.", "type": "error"}
+        })
+        return response
+
 
 def edit_fee_structure(request, pk):
     fs = get_object_or_404(FeeStructure, pk=pk)
@@ -180,20 +203,14 @@ def invoice_page(request, page):
     page_obj = paginator.get_page(page)
     return render(request, "finance/partials/invoice_list.html", {"invoices": page_obj})
 
+
 def send_invoice(request, fs_id):
-    """
-    Generate invoices for all students in the class/session/term
-    of this FeeStructure row.
-    """
     fs = get_object_or_404(FeeStructure, id=fs_id)
 
-    # 1. Get students in this class
     students = Student.objects.filter(
-    myclasses__student_class=fs.school_class,
-    myclasses__current_class=True
+        myclasses__student_class=fs.school_class,
+        myclasses__current_class=True
     )
-
-    # 2. Get all fee structures for same class/session/term
     fee_structures = FeeStructure.objects.filter(
         school_class=fs.school_class,
         session=fs.session,
@@ -206,11 +223,12 @@ def send_invoice(request, fs_id):
     try:
         with transaction.atomic():
             for student in students:
-                # avoid duplicate invoice
-                if SchoolInvoice.objects.filter(student=student, session=fs.session, term=fs.term).exists():
+                if SchoolInvoice.objects.filter(
+                    student=student, session=fs.session, term=fs.term
+                ).exists():
                     errors.append(f"Invoice already exists for {student}")
                     continue
-                
+
                 now = timezone.now()
                 invoice_number = f"INV-{now.year}-{int(now.timestamp() * 1_000_000)}"
 
@@ -233,27 +251,25 @@ def send_invoice(request, fs_id):
                     for struct in fee_structures
                 ]
                 InvoiceItem.objects.bulk_create(items)
-
                 invoices_created.append(invoice_number)
 
-        return JsonResponse({
-            "status": "success",
-            "message": f"{len(invoices_created)} invoices created.",
-            "invoices": invoices_created,
-            "errors": errors
-        }, status=201)
+        # ✅ Success notification
+        message = f"✅ {len(invoices_created)} invoice(s) created successfully."
+        if errors:
+            message = f"Invoice already exists | invoice(s) created: {len(invoices_created)}"
 
-    except DatabaseError as e:
-        return JsonResponse({
-            "status": "error",
-            "message": "Invoice creation failed.",
-            "details": str(e)
-        }, status=500)
+        response = HttpResponse("")
+        response["HX-Trigger"] = json.dumps({
+            "showMessage": {"message": message, "type": "success"}
+        })
+        return response
 
     except Exception as e:
-        return JsonResponse({
-            "status": "error",
-            "message": "An unexpected error occurred.",
-            "details": str(e)
-        }, status=500)
+        # ❌ Error notification
+        response = HttpResponse("", status=500)
+        response["HX-Trigger"] = json.dumps({
+            "showMessage": {"message": f"❌ Error: {str(e)}", "type": "danger"}
+        })
+        return response
+
 

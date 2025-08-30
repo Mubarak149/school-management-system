@@ -30,15 +30,15 @@
     <!-- Send Invoice Button -->
     <form 
       hx-post="{% url 'send_invoice' fs.id %}"
-      hx-target="#fs-{{ fs.id }}"
-      hx-swap="afterend"
-      hx-on="htmx:afterRequest: alert(event.detail.xhr.responseText)"
+      hx-target="#invoice-message"
+      hx-swap="innerHTML"
       class="d-inline">
       {% csrf_token %}
       <button type="submit" class="btn btn-sm btn-success">
         <i class="bi bi-envelope"></i> Send Invoice
       </button>
     </form>
+
   </td>  
   
 </tr>
