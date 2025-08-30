@@ -1,4 +1,9 @@
 import json
+import openpyxl
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from docx import Document
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
@@ -73,8 +78,6 @@ def finance_dashboard(request):
     return render(request, "finance/finance_dashboard.html", context)
 
 
-
-
 def category_row(request, pk):
     category = get_object_or_404(FeeCategory, pk=pk)
     html = render_to_string("finance/partials/category_row.html", {"cat": category})
@@ -118,7 +121,6 @@ def fee_structures_view(request):
         "form": form,
     })
 
-
 def create_fee_structure(request):
     if request.method == "POST":
         form = FeeStructureForm(request.POST)
@@ -147,7 +149,6 @@ def create_fee_structure(request):
             "showMessage": {"message": "❌ Invalid fee structure data.", "type": "error"}
         })
         return response
-
 
 def edit_fee_structure(request, pk):
     fs = get_object_or_404(FeeStructure, pk=pk)
@@ -178,6 +179,131 @@ def fee_structure_page(request, page):
     paginator = Paginator(structures, 5)
     page_obj = paginator.get_page(page)
     return render(request, "finance/partials/fee_structure_table.html", {"structures": page_obj})
+
+def fee_structure_invoices(request, fs_id):
+    fs = get_object_or_404(FeeStructure, id=fs_id)
+
+    # Get invoices related to this class/session/term
+    invoices = SchoolInvoice.objects.filter(
+        student__myclasses__student_class=fs.school_class,
+        session=fs.session,
+        term=fs.term
+    ).select_related("student", "session").prefetch_related("items", "payments")
+
+    return render(request, "finance/fee_structure_invoices.html", {
+        "fs": fs,
+        "invoices": invoices,
+    })
+
+def export_invoices_pdf(request, fs_id):
+    fs = get_object_or_404(FeeStructure, id=fs_id)
+    invoices = SchoolInvoice.objects.filter(
+        student__myclasses__student_class=fs.school_class,
+        session=fs.session,
+        term=fs.term
+    ).select_related("student")
+
+    # Create PDF response
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="invoices_{fs.school_class}_{fs.session}_{fs.term}.pdf"'
+
+    p = canvas.Canvas(response, pagesize=A4)
+    width, height = A4
+
+    # Title
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(1 * inch, height - 1 * inch, f"Invoices for {fs.school_class} - {fs.session} ({fs.term})")
+
+    y = height - 1.5 * inch
+    p.setFont("Helvetica", 10)
+
+    # Table Header
+    p.drawString(1 * inch, y, "Invoice #")
+    p.drawString(2.8 * inch, y, "Student")
+    p.drawString(4.8 * inch, y, "Total")
+    p.drawString(5.6 * inch, y, "Balance")
+    p.drawString(6.4 * inch, y, "Status")
+    y -= 0.3 * inch
+
+    # Rows
+    for invoice in invoices:
+        if y < 1 * inch:  # New page if space is low
+            p.showPage()
+            y = height - 1 * inch
+            p.setFont("Helvetica", 10)
+
+        p.drawString(1 * inch, y, invoice.invoice_number)
+        p.drawString(2.8 * inch, y, f"{invoice.student}")
+        p.drawString(4.8 * inch, y, f"₦{invoice.total_amount():,.2f}")
+        p.drawString(5.6 * inch, y, f"₦{invoice.balance():,.2f}")
+        p.drawString(6.4 * inch, y, invoice.get_status_display())
+        y -= 0.25 * inch
+
+    p.showPage()
+    p.save()
+    return response
+
+def export_invoices_word(request, fs_id):
+    fs = get_object_or_404(FeeStructure, id=fs_id)
+    invoices = SchoolInvoice.objects.filter(
+        student__myclasses__student_class=fs.school_class,
+        session=fs.session,
+        term=fs.term
+    )
+
+    document = Document()
+    document.add_heading(f"Invoices for {fs.school_class} - {fs.term} ({fs.session})", 0)
+
+    table = document.add_table(rows=1, cols=5)
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = "Invoice No"
+    hdr_cells[1].text = "Student"
+    hdr_cells[2].text = "Balance"
+    hdr_cells[3].text = "Status"
+    hdr_cells[4].text = "Session/Term"
+
+    for inv in invoices:
+        row = table.add_row().cells
+        row[0].text = str(inv.invoice_number)
+        row[1].text = str(inv.student)
+        row[2].text = f"₦{inv.balance():.2f}"
+        row[3].text = inv.get_status_display()
+        row[4].text = f"{inv.session} / {inv.term}"
+
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    response["Content-Disposition"] = f'attachment; filename="invoices_{fs.id}.docx"'
+    document.save(response)
+    return response
+
+
+def export_invoices_excel(request, fs_id):
+    fs = get_object_or_404(FeeStructure, id=fs_id)
+    invoices = SchoolInvoice.objects.filter(
+        student__myclasses__student_class=fs.school_class,
+        session=fs.session,
+        term=fs.term
+    )
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Invoices"
+
+    ws.append(["Invoice No", "Student", "Balance", "Status", "Session", "Term"])
+
+    for inv in invoices:
+        ws.append([
+            inv.invoice_number,
+            str(inv.student),
+            float(inv.balance()),
+            inv.get_status_display(),
+            str(inv.session),
+            str(inv.term),
+        ])
+
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = f'attachment; filename="invoices_{fs.id}.xlsx"'
+    wb.save(response)
+    return response
 
 
 def create_payment(request):

@@ -17,6 +17,10 @@ urlpatterns = [
     path("cancel_fee-structures/<int:pk>/", cancel_edit_fee_structure, name="cancel_edit_fee_structure"),
     path("fee-structures/page/<int:page>/", fee_structure_page, name="fee_structure_page"),
     path("fee-structures/<int:pk>/delete/", delete_fee_structure, name="delete_fee_structure"),
+    path("fee-structure/<int:fs_id>/invoices/", fee_structure_invoices, name="fee_structure_invoices"),
+    path("fee-structure/<int:fs_id>/invoices/pdf/", export_invoices_pdf, name="export_invoices_pdf"),
+    path("fee-structure/<int:fs_id>/invoices/word/", export_invoices_word, name="export_invoices_word"),
+    path("fee-structure/<int:fs_id>/invoices/excel/", export_invoices_excel, name="export_invoices_excel"),
 
     #Invoice
     path("send-invoice/<int:fs_id>/", send_invoice, name="send_invoice"),
