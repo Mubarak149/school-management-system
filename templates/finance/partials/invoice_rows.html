@@ -15,6 +15,10 @@
     {% endif %}
   </td>
   <td>{{ inv.due_date }}</td>
+  <td>
+    <a href="{% url 'invoice_detail' inv.id %}" class="btn btn-sm btn-info">View</a>
+  </td>
+  
 </tr>
 {% empty %}
 <tr>

@@ -1,9 +1,5 @@
 from django.db import models
 from django.utils import timezone
-from PIL import Image
-from django.core.exceptions import ValidationError
-from io import BytesIO
-from django.core.files.base import ContentFile
 from .utils import resize_image_field
 # Create your models here.
 

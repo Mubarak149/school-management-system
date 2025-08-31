@@ -25,7 +25,9 @@ urlpatterns = [
     #Invoice
     path("send-invoice/<int:fs_id>/", send_invoice, name="send_invoice"),
     path("invoices/page/<int:page>/", invoice_page, name="invoice_page"),
-    
+    path("invoice/<int:pk>/", invoice_detail, name="invoice_detail"),
+    path("invoice/<int:pk>/pdf/", invoice_detail_pdf, name="invoice_detail_pdf"),
+    path("invoice/<int:pk>/word/", invoice_detail_word, name="invoice_detail_word"),
     #payment
     path("create/payment/", create_payment, name="create_payment"),
     path("payments/page/<int:page>/", payment_page, name="payment_page"),
