@@ -16,12 +16,17 @@
   </td>
   <td>{{ inv.due_date }}</td>
   <td>
-    <a href="{% url 'invoice_detail' inv.id %}" class="btn btn-sm btn-info">View</a>
-  </td>
-  
+    <a href="{% url 'invoice_detail' inv.id %}" class="btn btn-sm mb-2 btn-info">View</a>
+    
+    {% if inv.status != "paid" and inv.status != "cancelled" %}
+      <a href="{% url 'invoice_payment' inv.id %}" class="btn btn-sm btn-success">
+        Pay
+      </a>
+    {% endif %}
+  </td>  
 </tr>
 {% empty %}
 <tr>
-  <td colspan="5" class="text-center">No invoices found</td>
+  <td colspan="6" class="text-center">No invoices found</td>
 </tr>
 {% endfor %}

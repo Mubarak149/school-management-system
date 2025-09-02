@@ -170,13 +170,13 @@
     </div>
     <div class="col-md-3 col-6">
       <div class="card bg-danger text-white text-center p-3">
-        <h6>Unpaid Students</h6>
+        <h6>Unpaid Invoices</h6>
         <h3>{{ students_unpaid }}</h3>
       </div>
     </div>
     <div class="col-md-3 col-6">
       <div class="card bg-success text-white text-center p-3">
-        <h6>Paid Students</h6>
+        <h6>Paid Invoices</h6>
         <h3>{{ students_paid }}</h3>
       </div>
     </div>
@@ -230,28 +230,28 @@
   <!-- Fee Categories Section -->
   <div id="fee-categories" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
     <h2 class="mb-4"><i class="bi bi-tags"></i> Fee Categories</h2>
-          <!-- Create Category Form -->
-      <form 
-      hx-post="{% url 'create_category' %}" 
-      hx-target="#categories-table-body" 
-      hx-swap="afterbegin"
-      hx-on="htmx:responseError: alert(event.detail.xhr.responseText)"
-      class="row g-3 mb-4">
-      {% csrf_token %}
-      <div class="col-md-6">
-        <label for="id_name" class="form-label fw-bold">Category Name</label>
-        {{ category_form.name }}
-      </div>
-      <div class="col-md-6">
-        <label for="id_description" class="form-label fw-bold">Description</label>
-        {{ category_form.description }}
-      </div>
-      <div class="col-12">
-        <button type="submit" class="btn btn-success w-100">
-          <i class="bi bi-plus-circle"></i> Add Category
-        </button>
-      </div>
-      </form>
+        <!-- Create Category Form -->
+        <form 
+          hx-post="{% url 'create_category' %}" 
+          hx-target="#categories-table-body" 
+          hx-swap="beforeend" 
+          class="row g-3 mb-4">
+          {% csrf_token %}
+          <div class="col-md-6">
+            <label for="id_name" class="form-label fw-bold">Category Name</label>
+            {{ category_form.name }}
+          </div>
+          <div class="col-md-6">
+            <label for="id_description" class="form-label fw-bold">Description</label>
+            {{ category_form.description }}
+          </div>
+          <div class="col-12">
+            <button type="submit" class="btn btn-success w-100">
+              <i class="bi bi-plus-circle"></i> Add Category
+            </button>
+          </div>
+        </form>
+
 
       <!-- Categories Table -->
       <div class="table-responsive">
@@ -331,8 +331,11 @@
         </div>
         <div class="col-md-6">
           <label for="id_category" class="form-label fw-bold">Category</label>
-          {{ fee_structure_form.category }}
+          <div>
+            {{ fee_structure_form.category }}
+          </div>
         </div>
+        
         <div class="col-md-6">
           <label for="id_amount" class="form-label fw-bold">Amount</label>
           {{ fee_structure_form.amount }}
@@ -427,38 +430,6 @@
 
     <!-- Payment Management Section -->
     <div id="payments" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
-      <h2 class="mb-4">Payments</h2>
-
-      <!-- Create Payment -->
-      <h3 class="mb-3">Record Payment</h3>
-      <form 
-        hx-post="{% url 'create_payment' %}" 
-        hx-target="#payments-table-body" 
-        hx-swap="outerHTML"
-        hx-on="htmx:afterRequest: this.reset()"
-        class="row g-3"
-      >
-        {% csrf_token %}
-        {% for field in payment_form %}
-          <div class="col-md-6">
-            <label class="form-label">{{ field.label }}</label>
-            {{ field }}
-            {% if field.help_text %}
-              <small class="form-text text-muted">{{ field.help_text }}</small>
-            {% endif %}
-            {% for error in field.errors %}
-              <div class="text-danger">{{ error }}</div>
-            {% endfor %}
-          </div>
-        {% endfor %}
-
-        <div class="col-12">
-          <button type="submit" name="create_payment" class="btn btn-primary w-100">
-            Save Payment
-          </button>
-        </div>
-      </form>
-
       <!-- Payments Table -->
       <h3 class="mt-5 mb-3">All Payments</h3>
 

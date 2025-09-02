@@ -11,7 +11,7 @@ from reportlab.lib.units import inch
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT, WD_ALIGN_PARAGRAPH
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -24,8 +24,6 @@ from .models import (SchoolInvoice, InvoiceItem,
                      Payment, FeeStructure, FeeCategory)
 from student.models import Student
 from school_admin.models import SiteSetting
-
-
 
 
 
@@ -84,7 +82,7 @@ def finance_dashboard(request):
     }
     return render(request, "finance/finance_dashboard.html", context)
 
-
+#category view
 def category_row(request, pk):
     category = get_object_or_404(FeeCategory, pk=pk)
     html = render_to_string("finance/partials/category_row.html", {"cat": category})
@@ -95,7 +93,7 @@ def create_category(request):
         form = FeeCategoryForm(request.POST)
         if form.is_valid():
             category = form.save()
-            html = render_to_string("finance/partials/category_row.html", {"cat": category})
+            html = render_to_string("finance/partials/category_row.html", {"cat": category}, request=request)
             return HttpResponse(html)  # HTMX swaps this into table
         return JsonResponse({"error": "Invalid data"}, status=400)
 
@@ -117,6 +115,10 @@ def delete_category(request, pk):
     category = get_object_or_404(FeeCategory, pk=pk)
     category.delete()
     return HttpResponse("")  # removes row
+
+def fee_category_dropdown(request):
+    categories = FeeCategory.objects.all()
+    return render(request, "finance/partials/fee_category_dropdown.html", {"categories": categories})
 
 
 # Fee structure View
@@ -202,8 +204,7 @@ def fee_structure_invoices(request, fs_id):
         "invoices": invoices,
     })
 
-
-
+# Create Payment
 def create_payment(request):
     if request.method == "POST":
         form = PaymentForm(request.POST)
@@ -214,6 +215,26 @@ def create_payment(request):
                 "payments": payments
             })
     return HttpResponse(status=405)
+
+def invoice_payment(request, invoice_id):
+    invoice = get_object_or_404(SchoolInvoice, id=invoice_id)
+
+    if request.method == "POST":
+        form = PaymentForm(request.POST)
+        if form.is_valid():
+            payment = form.save(commit=False)
+            payment.invoice = invoice   # ✅ attach manually
+            payment.date_paid = timezone.now()
+            payment.save()
+            invoice.update_status()
+            return redirect("invoice_detail", pk=invoice.id)
+    else:
+        form = PaymentForm()
+
+    return render(request, "finance/invoice_payment.html", {
+        "invoice": invoice,
+        "form": form
+    })
 
 def payment_page(request, page):
     payments = Payment.objects.all()

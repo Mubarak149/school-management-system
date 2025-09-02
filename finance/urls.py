@@ -9,6 +9,7 @@ urlpatterns = [
     path("categories/<int:pk>/edit/", edit_category, name="edit_category"),
     path("categories/<int:pk>/delete/", delete_category, name="delete_category"),
     path("categories/<int:pk>/row/", category_row, name="category_row"),
+    path("fee_category_dropdown/", fee_category_dropdown ,name="fee_category_dropdown"),
     
     #Fee structure CRUD
     path("fee-structures/", fee_structures_view, name="fee_structures"),
@@ -30,6 +31,7 @@ urlpatterns = [
     path("invoice/<int:pk>/word/", invoice_detail_word, name="invoice_detail_word"),
     #payment
     path("create/payment/", create_payment, name="create_payment"),
+    path("invoice/<int:invoice_id>/pay/", invoice_payment, name="invoice_payment"),
     path("payments/page/<int:page>/", payment_page, name="payment_page"),
 
     

@@ -24,20 +24,24 @@
           <a href="{% url 'finance_dashboard' %}" class="btn btn-secondary btn-sm">
             <i class="bi bi-arrow-left"></i> Back
           </a>
-
           <a href="{% url 'export_invoices_pdf' fs.id %}" class="btn btn-danger btn-sm">
             <i class="bi bi-file-earmark-pdf"></i> Download PDF
           </a>
-
           <a href="{% url 'export_invoices_word' fs.id %}" class="btn btn-sm btn-primary me-2">
             <i class="bi bi-file-word"></i> Export to Word
-        </a>
-        
-        <a href="{% url 'export_invoices_excel' fs.id %}" class="btn btn-sm btn-success">
+          </a>
+          <a href="{% url 'export_invoices_excel' fs.id %}" class="btn btn-sm btn-success">
             <i class="bi bi-file-excel"></i> Export to Excel
-        </a>
+          </a>
         </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="row mb-3">
+      <div class="col-md-4 ms-auto">
+        <input type="text" id="invoiceSearch" class="form-control" placeholder="Search by invoice # or student...">
       </div>
+    </div>
 
     <!-- Invoices Table -->
     <div class="card shadow-sm">
@@ -46,7 +50,7 @@
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
-          <table class="table table-striped table-hover mb-0">
+          <table class="table table-striped table-hover mb-0" id="invoiceTable">
             <thead class="table-dark">
               <tr>
                 <th scope="col">Invoice #</th>
@@ -74,19 +78,9 @@
                   {% endif %}
                 </td>
                 <td>
-                  <a href="#" class="btn btn-sm btn-outline-primary">
+                  <a href="{% url 'invoice_detail' inv.id %}" class="btn btn-sm btn-outline-primary">
                     View
                   </a>
-                  <form 
-                    hx-post="#"
-                    hx-target="closest tr"
-                    hx-swap="afterend"
-                    class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-success">
-                      Send
-                    </button>
-                  </form>
                 </td>
               </tr>
               {% empty %}
@@ -104,5 +98,24 @@
 
   <script src="https://unpkg.com/htmx.org@1.9.2"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Search Script -->
+  <script>
+    document.getElementById("invoiceSearch").addEventListener("keyup", function() {
+      let value = this.value.toLowerCase();
+      let rows = document.querySelectorAll("#invoiceTable tbody tr");
+
+      rows.forEach(row => {
+        let invoice = row.cells[0].innerText.toLowerCase();
+        let student = row.cells[1].innerText.toLowerCase();
+
+        if (invoice.includes(value) || student.includes(value)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    });
+  </script>
 </body>
 </html>
