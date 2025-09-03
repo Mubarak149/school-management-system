@@ -33,6 +33,7 @@ urlpatterns = [
     path("create/payment/", create_payment, name="create_payment"),
     path("invoice/<int:invoice_id>/pay/", invoice_payment, name="invoice_payment"),
     path("payments/page/<int:page>/", payment_page, name="payment_page"),
+    path("receipt/<int:invoice_id>/", generate_receipt, name="generate_receipt"),
 
     
     

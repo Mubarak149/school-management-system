@@ -2,6 +2,7 @@ import json
 import openpyxl
 import io
 import os
+import weasyprint
 from django.conf import settings
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
@@ -241,6 +242,25 @@ def payment_page(request, page):
     paginator = Paginator(payments, 20)
     page_obj = paginator.get_page(page)
     return render(request, "finance/partials/payments_table.html", {"payments": page_obj})
+
+
+def generate_receipt(request, invoice_id):
+    invoice = get_object_or_404(SchoolInvoice, id=invoice_id)
+    payments = invoice.payments.all()
+
+    # Render HTML
+    html_string = render_to_string("finance/receipt.html", {
+        "invoice": invoice,
+        "payments": payments,
+    })
+
+    # Convert to PDF
+    response = HttpResponse(content_type="application/pdf")
+    response['Content-Disposition'] = f'inline; filename=receipt_{invoice.invoice_number}.pdf'
+    weasyprint.HTML(string=html_string).write_pdf(response)
+
+    return response
+
 
 #invoice view
 def invoice_page(request, page):
