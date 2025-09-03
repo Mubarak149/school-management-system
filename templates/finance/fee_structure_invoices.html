@@ -81,6 +81,11 @@
                   <a href="{% url 'invoice_detail' inv.id %}" class="btn btn-sm btn-outline-primary">
                     View
                   </a>
+                  {% if inv.status != "paid" and inv.status != "cancelled" %}
+                    <a href="{% url 'invoice_payment' inv.id %}" class="btn btn-sm btn-success">
+                      Pay
+                    </a>
+                  {% endif %}
                 </td>
               </tr>
               {% empty %}

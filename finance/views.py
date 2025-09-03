@@ -3,6 +3,7 @@ import openpyxl
 import io
 import os
 import weasyprint
+from datetime import timedelta
 from django.conf import settings
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, Image
 from reportlab.lib.styles import getSampleStyleSheet
@@ -28,9 +29,8 @@ from school_admin.models import SiteSetting
 
 
 
-
 def finance_dashboard(request):
-    # Aggregate stats in ONE query
+    # Aggregate stats
     invoice_status_counts = SchoolInvoice.objects.aggregate(
         unpaid=Count("id", filter=Q(status="unpaid")),
         partial=Count("id", filter=Q(status="partial")),
@@ -61,15 +61,27 @@ def finance_dashboard(request):
     fee_structure_paginator = Paginator(fee_structure_list, 5)
     fee_structure = fee_structure_paginator.get_page(request.GET.get("structure_page"))
 
-    # Forms
+    # --- UPCOMING DUE & OVERDUE INVOICES ---
+    today = timezone.now().date()
+    upcoming_due = SchoolInvoice.objects.filter(
+        due_date__gte=today,
+        due_date__lte=today + timedelta(days=3),
+        status__in=["unpaid", "partial"]
+    ).select_related("student")
+
+    overdue = SchoolInvoice.objects.filter(
+        due_date__lt=today,
+        status__in=["unpaid", "partial"]
+    ).select_related("student")
+
+    # Forms + Context
     category = FeeCategory.objects.all().only("id", "name")
     context = {
-        "students": total_students,  # don't fetch all students unless needed
+        "students": total_students,
         "invoices": invoices,
         "payments": payments,
         "structures": fee_structure,
         "invoice_form": InvoiceForm(),
-        "payment_form": PaymentForm(),
         "categories": category,
         "category_form": FeeCategoryForm(),
         "fee_structure_form": FeeStructureForm(),
@@ -80,8 +92,11 @@ def finance_dashboard(request):
         "unpaid_invoices": invoice_status_counts["unpaid"],
         "partial_invoices": invoice_status_counts["partial"],
         "paid_invoices": invoice_status_counts["paid"],
+        "upcoming_due": upcoming_due,
+        "overdue": overdue,
     }
     return render(request, "finance/finance_dashboard.html", context)
+
 
 #category view
 def category_row(request, pk):
@@ -469,17 +484,37 @@ def send_invoice(request, fs_id):
     ).select_related("category")
 
     invoices_created = []
+    updated_invoices = []  # 🆕 track invoices where new items were added
     errors = []
 
     try:
         with transaction.atomic():
             for student in students:
-                if SchoolInvoice.objects.filter(
+                existing_invoice = SchoolInvoice.objects.filter(
                     student=student, session=fs.session, term=fs.term
-                ).exists():
-                    errors.append(f"Invoice already exists for {student}")
+                ).first()
+
+                if existing_invoice:
+                    missing_items = False
+                    for struct in fee_structures:
+                        item, created = InvoiceItem.objects.get_or_create(
+                            invoice=existing_invoice,
+                            category=struct.category,
+                            defaults={
+                                "description": struct.category.name,
+                                "amount": struct.amount,
+                            }
+                        )
+                        if created:
+                            missing_items = True
+
+                    if missing_items:
+                        updated_invoices.append(existing_invoice.invoice_number)
+                    else:
+                        errors.append(f"Invoice already exists for {student}")
                     continue
 
+                # --- Create new invoice ---
                 now = timezone.now()
                 invoice_number = f"INV-{now.year}-{int(now.timestamp() * 1_000_000)}"
 
@@ -504,10 +539,13 @@ def send_invoice(request, fs_id):
                 InvoiceItem.objects.bulk_create(items)
                 invoices_created.append(invoice_number)
 
-        # ✅ Success notification
-        message = f"✅ {len(invoices_created)} invoice(s) created successfully."
-        if errors:
-            message = f"Invoice already exists | invoice(s) created: {len(invoices_created)}"
+        # ✅ Success / Info / Warning messages
+        if invoices_created:
+            message = f"✅ {len(invoices_created)} invoice(s) created successfully."
+        if updated_invoices:
+            message = f"➕ Added new items to {len(updated_invoices)} existing invoice(s)."
+        if errors and not (invoices_created or updated_invoices):
+            message = "⚠️ All invoices already exist. No changes made."
 
         response = HttpResponse("")
         response["HX-Trigger"] = json.dumps({
@@ -516,12 +554,12 @@ def send_invoice(request, fs_id):
         return response
 
     except Exception as e:
-        # ❌ Error notification
         response = HttpResponse("", status=500)
         response["HX-Trigger"] = json.dumps({
             "showMessage": {"message": f"❌ Error: {str(e)}", "type": "danger"}
         })
         return response
+
 
 def export_invoices_pdf(request, fs_id):
     fs = get_object_or_404(FeeStructure, id=fs_id)

@@ -224,8 +224,56 @@
       </div>
     </div>
   </div>
+  <!-- Reminders & Due Dates -->
+  <div class="bg-white p-4 mt-4 rounded shadow-sm">
+    <h4 class="mb-3"><i class="bi bi-bell text-primary"></i> Invoice Reminders</h4>
 
+    <div class="row g-3">
+      <!-- Upcoming Due -->
+      <div class="col-md-6">
+        <div class="card border-info shadow-sm">
+          <div class="card-body">
+            <h6 class="text-info"><i class="bi bi-clock-history"></i> Due Soon (Next 3 Days)</h6>
+            {% if upcoming_due %}
+              <ul class="list-group list-group-flush">
+                {% for inv in upcoming_due %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ inv.invoice_number }} - {{ inv.student }}
+                    <span class="badge bg-info">{{ inv.due_date }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-muted">No upcoming invoices.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Overdue -->
+      <div class="col-md-6">
+        <div class="card border-danger shadow-sm">
+          <div class="card-body">
+            <h6 class="text-danger"><i class="bi bi-exclamation-triangle"></i> Overdue</h6>
+            {% if overdue %}
+              <ul class="list-group list-group-flush">
+                {% for inv in overdue %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ inv.invoice_number }} - {{ inv.student }}
+                    <span class="badge bg-danger">{{ inv.due_date }}</span>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <p class="text-muted">No overdue invoices.</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+    
 
   <!-- Fee Categories Section -->
   <div id="fee-categories" style="display:none;" class="bg-white p-5 mt-4 rounded shadow-sm">
