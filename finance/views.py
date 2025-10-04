@@ -211,6 +211,7 @@ def fee_structure_invoices(request, fs_id):
     # Get invoices related to this class/session/term
     invoices = SchoolInvoice.objects.filter(
         student__myclasses__student_class=fs.school_class,
+        student__myclasses__current_class=True,
         session=fs.session,
         term=fs.term
     ).select_related("student", "session").prefetch_related("items", "payments")
